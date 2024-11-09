@@ -1,4 +1,5 @@
 import { createLazyFileRoute } from "@tanstack/react-router";
+import VacationForm from "../components/VacationForm"
 
 export const Route = createLazyFileRoute("/")({
   component: Index,
@@ -6,8 +7,6 @@ export const Route = createLazyFileRoute("/")({
 
 function Index() {
   return (
-    <div className="flex flex-col gap-2 p-2">
-      <h3 className="text-xl font-bold">Welcome.</h3>
-    </div>
+    <VacationForm />
   );
 }
