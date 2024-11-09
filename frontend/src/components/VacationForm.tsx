@@ -39,9 +39,9 @@ const VacationForm: React.FC = () => {
       files.map(async (file) => {
         try {
           const exifData = await exifr.parse(file, { gps: true });
-          const latitude = exifData?.GPSLatitude || null;
-          const longitude = exifData?.GPSLongitude || null;
-
+          const latitude = exifData.GPSLatitude ? exifData.latitude : null;
+          const longitude = exifData.GPSLongitude ? exifData.longitude : null;
+          
           return {
             file,
             exifData: {
