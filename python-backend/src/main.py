@@ -1,18 +1,18 @@
 import asyncio
 import json
-import os
 from pathlib import Path
-from typing import Annotated, Optional, Union
-from .luma_video import generate_video_from_1_or_2_images, download_video_from_id, luma_client
+from typing import Optional, Union
+
+from src.openai_summary import create_summary_from_images_and_metadata
+from src.routes import manual_test_apis
+from src.file_upload import LOCAL_UPLOAD_DIRECTORY, save_files_to_disk, upload_files_to_r2
+from src.luma_video import generate_video_from_1_or_2_images, download_video_from_id, luma_client
 
 
 from fastapi import FastAPI, File, Form, UploadFile, HTTPException
 from pydantic import BaseModel
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import FileResponse
-from PIL import Image
-from typing import Optional
-from fastapi import File, UploadFile
 
 app = FastAPI()
 
@@ -26,32 +26,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-UPLOAD_DIRECTORY = Path(os.path.join(os.path.dirname(__file__), "./uploads")).resolve()
-print(f"Images will be uploaded to {UPLOAD_DIRECTORY}")
-os.makedirs(UPLOAD_DIRECTORY, exist_ok=True)
-
-
-image_filenames = []
-image_embeddings = []
-image_object_embeddings = {}
-image_with_objects = []
-
-
-async def save_files_to_disk(files: list[UploadFile]) -> list[Path]:
-    local_file_paths: list[Path] = []
-    for file in files:
-        file_path = os.path.join(UPLOAD_DIRECTORY, file.filename)
-        with open(file_path, "wb") as buffer:
-            buffer.write(await file.read())
-        local_file_paths.append(Path(file_path))
-    return local_file_paths
-
-
-def process_files(local_file_paths):
-    for file_path in local_file_paths:
-        image = Image.open(file_path)
-        print("Loaded image, of size ", image.size)
-
+app.include_router(manual_test_apis.router)
 
 @app.get("/")
 def read_root():
@@ -70,6 +45,7 @@ async def process_pair_of_images(image_pair: ImagePair):
     video_id = await generate_video_from_1_or_2_images(luma_client, image_pair)
     return await download_video_from_id(video_id)
 
+
 @app.post("/create-travel-summary/")
 async def create_travel_summary(
     images: list[UploadFile] = File(...),
@@ -78,9 +54,6 @@ async def create_travel_summary(
     metadata = CreateTravelSummaryMetadata(**metadata_dict)
     local_file_paths = await save_files_to_disk(images)
     
-    return "TODO. Not implemented."
-    
-    # TODO upload to R2 cloudflare
     remote_file_paths: list[str] = await upload_files_to_r2(local_file_paths)
     # [(1,2), (3,4), (5)]
     paired_remote_file_paths: list[ImagePair] = []
@@ -95,7 +68,7 @@ async def create_travel_summary(
     
     # TODO read exifmetadata from images
     # TODO call OpenAI API to generate summary based on images and metadata
-    summary = create_summary_from_images_and_metadata(images, metadata)
+    summary = create_summary_from_images_and_metadata(remote_file_paths, metadata.names, metadata.description)
     # TODO use elevenlabs to generate voice over for summary, and store locally
     voice_over = generate_voice_over(summary)
 
@@ -109,7 +82,7 @@ async def create_travel_summary(
 async def download_file(filename: str):
     # Prevent directory traversal
     sanitized_filename = Path(filename).name
-    file_path = UPLOAD_DIRECTORY / sanitized_filename
+    file_path = LOCAL_UPLOAD_DIRECTORY / sanitized_filename
 
     # Resolve the full path and check it's within the upload directory
     try:
@@ -117,7 +90,7 @@ async def download_file(filename: str):
     except Exception:
         raise HTTPException(status_code=400, detail="Invalid filename")
 
-    if not resolved_file_path.is_relative_to(UPLOAD_DIRECTORY):
+    if not resolved_file_path.is_relative_to(LOCAL_UPLOAD_DIRECTORY):
         raise HTTPException(status_code=400, detail="Invalid filename")
 
     if resolved_file_path.exists() and resolved_file_path.is_file():

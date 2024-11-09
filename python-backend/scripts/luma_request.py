@@ -1,19 +1,16 @@
 import requests
-from dotenv import load_dotenv
-import os
 
-from luma_video import generate_video
+from src.env import env
 
-video_id = generate_video()
+from ..src.luma_video import generate_video_from_1_or_2_images
 
-load_dotenv()
-auth_token=os.environ.get("LUMAAI_API_bearer")
+video_id = generate_video_from_1_or_2_images()
 
 url = "https://api.lumalabs.ai/dream-machine/v1/generations/"+ str(video_id)
 
 headers = {
     "accept": "application/json",
-    "authorization": auth_token
+    "authorization": f"Bearer ${env.LUMAAI_API_KEY}"
 }
 
 response = requests.get(url, headers=headers)

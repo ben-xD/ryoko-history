@@ -7,6 +7,9 @@
 - [Install uv](https://github.com/astral-sh/uv) by running `curl -LsSf https://astral.sh/uv/install.sh | sh` on linux/macOS
 - Set up virtual env and install python dependencies: `uv sync`
 - Configure VScode to use that new python environment
+- Create cloudflare account and create an R2 bucket (remember the name)
+- Optional: Install `AWS boto3` vscode extensio
+  - Warning: don't install Pylance, because it [breaks intellisense in vscode](https://stackoverflow.com/questions/50389852/visual-studio-code-intellisense-not-working). If you did that, uninstall Pylance extension, and uninstall python extension, and install Python extension again.
 
 ## Usage
 
