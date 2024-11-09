@@ -1,0 +1,13 @@
+[project]
+name = "python-backend"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "elevenlabs>=1.12.1",
+    "fastapi[standard]>=0.115.4",
+    "pillow>=11.0.0",
+    "starlette>=0.41.2",
+    "uvicorn[standard]>=0.32.0",
+]

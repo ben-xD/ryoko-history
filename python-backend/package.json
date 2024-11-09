@@ -1,0 +1,13 @@
+{
+  "name": "python-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "uv run fastapi run main.py",
+    "dev": "uv run uvicorn main:app --reload"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
