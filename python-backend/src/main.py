@@ -1,8 +1,9 @@
+import json
 import os
 from pathlib import Path
-from typing import Optional
+from typing import Annotated, Optional
 
-from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi import FastAPI, File, Form, UploadFile, HTTPException
 from pydantic import BaseModel
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import FileResponse
@@ -33,15 +34,6 @@ image_object_embeddings = {}
 image_with_objects = []
 
 
-def individual_similarity(embedding1, embedding2):
-    similarity = torch.matmul(embedding1, embedding2.T)
-    norm1 = embedding1.norm(dim=1, keepdim=True)
-    norm2 = embedding2.norm(dim=1, keepdim=True)
-    similarity = similarity / (norm1 * norm2.T)
-    assert similarity.shape == (1, 1), f"Expected shape (1, 1), got {similarity.shape}"
-    return similarity.item()
-
-
 async def upload_files(files: list[UploadFile]) -> list[Path]:
     local_file_paths: list[Path] = []
     for file in files:
@@ -50,22 +42,6 @@ async def upload_files(files: list[UploadFile]) -> list[Path]:
             buffer.write(await file.read())
         local_file_paths.append(Path(file_path))
     return local_file_paths
-
-
-class Position2D(BaseModel):
-    lat_deg: int
-    lon_deg: int
-
-
-class SearchResult(BaseModel):
-    image_url: str
-    score: float
-
-    # name: str
-    # description: Optional[str] = None
-    # position: Optional[Position2D] = None
-    # exif: Exif # position? camera data?
-    # embedding: bytes
 
 
 def process_files(local_file_paths):
@@ -79,10 +55,32 @@ def read_root():
     return "OK"
 
 
-@app.post("/uploadfiles/")
-async def upload_and_process_files(files: list[UploadFile] = File(...)):
-    local_file_paths = await upload_files(files)
-    image_filenames.extend([file.filename for file in files])
+class CreateTravelSummaryMetadata(BaseModel):
+    names: list[str]
+    description: Optional[str] = None
+
+
+@app.post("/create-travel-summary/")
+async def create_travel_summary(
+    images: list[UploadFile] = File(...),
+    metadata_json_str: str = Form(...)):
+    metadata_dict = json.loads(metadata_json_str)
+    metadata = CreateTravelSummaryMetadata(**metadata_dict)
+    local_file_paths = await upload_files(images)
+    
+    # TODO upload to R2 cloudflare
+    # TODO call Luma AI with R2 URLs, wait for video
+    # TODO download video to local downloads
+    
+    # TODO read exifmetadata from images
+    # TODO call OpenAI API to generate summary based on images and metadata
+    # TODO use elevenlabs to generate voice over for summary
+    # TODO download generated audio to mp3 file
+    
+    # TODO merge all videos and 1 audio file into final video
+    # Return final video URL to browser
+    
+    image_filenames.extend([file.filename for file in images])
     process_files(local_file_paths)
 
 
@@ -107,7 +105,13 @@ async def download_file(filename: str):
         raise HTTPException(status_code=404, detail="File not found")
 
 
-if __name__ == "__main__":
+def main():
     import uvicorn
 
-    uvicorn.run(app, host="127.0.0.1", port=8000)
+    public = False
+    host = "0.0.0.0" if public else "127.0.0.1"
+    uvicorn.run(app, host=host, port=8000)
+
+
+if __name__ == "__main__":
+    main()

@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "uv run fastapi run main.py",
-    "dev": "uv run uvicorn main:app --reload"
+    "start": "uv run fastapi run src/main.py",
+    "dev": "uv run uvicorn src.main:app --reload"
   },
   "keywords": [],
   "author": "",

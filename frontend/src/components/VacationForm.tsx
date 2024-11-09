@@ -2,15 +2,18 @@ import React, { useState } from 'react';
 import { useForm, useFieldArray, type SubmitHandler, Controller } from 'react-hook-form';
 import * as exifr from 'exifr';
 import VideoPlayer from './VideoPlayer';
+import {client} from '@/clients/httpClient';
+import { useMutation } from '@tanstack/react-query';
+import { env } from '../env';
 
-type ExifData = {
+interface ExifData {
   [key: string]: unknown;
   latitude?: number | null;
   longitude?: number | null;
 };
 
 interface FormValues {
-  names: { name: string }[];
+  names: {name: string}[];
   images: { file: File; exifData: ExifData | null }[];
   description: string;
 }
@@ -33,7 +36,7 @@ const VacationForm: React.FC = () => {
 
   console.log("imageFiles ", imageFiles);
 
-  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
     const imagesWithExifData = await Promise.all(
       files.map(async (file) => {
@@ -61,7 +64,31 @@ const VacationForm: React.FC = () => {
     setValue('images', [...imageFiles, ...imagesWithExifData]); // Update form state
   };
 
+  const searchMutation = useMutation({
+    // { imageFiles, names: data.names, description: data.description }
+    mutationFn: async ({description, imageFiles, names}: { imageFiles: FormValues['images'], names: string[], description: string}) => {
+
+      const formData = new FormData();
+      for (const file of imageFiles) {
+        formData.append('images', file.file);
+      }
+      formData.append('metadata_json_str', JSON.stringify({names, description}));
+
+      const apiPath = "/create-travel-summary/";
+      const reply = await fetch(env.backendHttpUrl + apiPath, {
+        method: 'POST',
+        body: formData,
+      });
+      return await reply.json()
+    },
+    onSuccess: (data) => {
+      console.log('Success', {data});
+    }
+  });
+
   const onSubmit: SubmitHandler<FormValues> = (data) => {
+    searchMutation.mutate({ imageFiles, names: data.names.map(n => n.name), description: data.description });
+
     console.log('Form Data:', data);
   };
 
@@ -98,7 +125,7 @@ const VacationForm: React.FC = () => {
             type="file"
             accept="image/*"
             multiple
-            onChange={handleImageUpload}
+            onChange={handleImageSelect}
             className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
