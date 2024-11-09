@@ -1,7 +1,10 @@
+import asyncio
 import json
 import os
 from pathlib import Path
-from typing import Annotated, Optional
+from typing import Annotated, Optional, Union
+from .luma_video import generate_video_from_1_or_2_images, download_video_from_id, luma_client
+
 
 from fastapi import FastAPI, File, Form, UploadFile, HTTPException
 from pydantic import BaseModel
@@ -34,7 +37,7 @@ image_object_embeddings = {}
 image_with_objects = []
 
 
-async def upload_files(files: list[UploadFile]) -> list[Path]:
+async def save_files_to_disk(files: list[UploadFile]) -> list[Path]:
     local_file_paths: list[Path] = []
     for file in files:
         file_path = os.path.join(UPLOAD_DIRECTORY, file.filename)
@@ -59,6 +62,13 @@ class CreateTravelSummaryMetadata(BaseModel):
     names: list[str]
     description: Optional[str] = None
 
+MINIMUM_IMAGES = 2
+
+ImagePair = Union[tuple[str, str], str]
+
+async def process_pair_of_images(image_pair: ImagePair):
+    video_id = await generate_video_from_1_or_2_images(luma_client, image_pair)
+    return await download_video_from_id(video_id)
 
 @app.post("/create-travel-summary/")
 async def create_travel_summary(
@@ -66,22 +76,33 @@ async def create_travel_summary(
     metadata_json_str: str = Form(...)):
     metadata_dict = json.loads(metadata_json_str)
     metadata = CreateTravelSummaryMetadata(**metadata_dict)
-    local_file_paths = await upload_files(images)
+    local_file_paths = await save_files_to_disk(images)
+    
+    return "TODO. Not implemented."
     
     # TODO upload to R2 cloudflare
-    # TODO call Luma AI with R2 URLs, wait for video
-    # TODO download video to local downloads
+    remote_file_paths: list[str] = await upload_files_to_r2(local_file_paths)
+    # [(1,2), (3,4), (5)]
+    paired_remote_file_paths: list[ImagePair] = []
+    for i in range(0, len(remote_file_paths), 2):
+        pair = tuple(remote_file_paths[i:i + 2])
+        paired_remote_file_paths.append(pair)
+    
+    local_generated_video_paths: list[str] = []
+    for pair in paired_remote_file_paths:
+        local_generated_video_paths.append(process_pair_of_images(pair))
+    await asyncio.gather(*local_generated_video_paths)
     
     # TODO read exifmetadata from images
     # TODO call OpenAI API to generate summary based on images and metadata
-    # TODO use elevenlabs to generate voice over for summary
-    # TODO download generated audio to mp3 file
-    
+    summary = create_summary_from_images_and_metadata(images, metadata)
+    # TODO use elevenlabs to generate voice over for summary, and store locally
+    voice_over = generate_voice_over(summary)
+
     # TODO merge all videos and 1 audio file into final video
+    final_video_path = merge_videos_and_audio(local_generated_video_paths, voice_over)
     # Return final video URL to browser
-    
-    image_filenames.extend([file.filename for file in images])
-    process_files(local_file_paths)
+    return final_video_path
 
 
 @app.get("/uploads/{filename}")
