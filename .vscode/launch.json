@@ -1,0 +1,27 @@
+{
+  "configurations": [
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Node: Debug Current Test File",
+      "autoAttachChildProcesses": false,
+      "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
+      "program": "${workspaceRoot}/node_modules/vitest/vitest.mjs",
+      "args": ["run", "${relativeFile}", "--test-timeout=0"],
+      "smartStep": true,
+      "console": "integratedTerminal"
+    },
+    // https://developers.cloudflare.com/workers/observability/dev-tools/breakpoints/
+    {
+      "name": "Wrangler: Debug Worker",
+      "type": "node",
+      "request": "attach",
+      "port": 9229,
+      "cwd": "/",
+      "resolveSourceMapLocations": null,
+      "attachExistingChildren": false,
+      "autoAttachChildProcesses": true,
+      "sourceMaps": true
+    }
+  ]
+}

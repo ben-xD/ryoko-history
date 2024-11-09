@@ -1,0 +1,20 @@
+{
+	"name": "@ryoko/root",
+	"devDependencies": {
+		"prettier": "^3.3.3",
+		"turbo": "^2.2.3",
+		"vitest": "^2.1.3",
+		"wrangler": "^3.83.0"
+	},
+	"packageManager": "pnpm@9.6.0",
+	"scripts": {
+		"dev": "turbo dev",
+		"build": "turbo build",
+		"lint": "turbo lint",
+		"lint:fix": "turbo lint:fix",
+		"clean": "turbo clean",
+		"test": "vitest",
+		"deploy:staging": "turbo deploy:staging",
+		"deploy:production": "turbo deploy:production"
+	  }
+}

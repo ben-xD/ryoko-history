@@ -1,0 +1,13 @@
+{
+    "extends": "@repo/typescript-config/tsconfig.base.json",
+    "compilerOptions": {
+        // I didn't use "composite": true because using it requires all the files to be listed in `include`, rather than just the file that is the entry point.
+        // https://www.typescriptlang.org/tsconfig/#composite "All implementation files must be matched by an include pattern or listed in the files array. If this constraint is violated, tsc will inform you which files weren’t specified."
+        "outDir": "./dist",
+        "declaration": true,
+        // Lets dependent packages click into source files from the dependency package (which uses this tsconfig)
+        "declarationMap": true,
+        "sourceMap": true
+    },
+    "include": ["src/httpClient.ts"],
+}

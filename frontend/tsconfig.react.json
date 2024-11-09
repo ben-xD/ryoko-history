@@ -1,0 +1,4 @@
+{
+    "extends": "@repo/typescript-config/tsconfig.react.json"
+}
+  

@@ -1,0 +1,15 @@
+/* For config files */
+{
+  "extends": "./tsconfig.base.json",
+    "compilerOptions": {
+      "target": "ES2022",
+      "lib": ["ES2023"],
+      "module": "ESNext",
+      "noEmit": true,
+      "allowImportingTsExtensions": true,
+      "composite": true,
+    },
+    // Doesn't support wildcard in the name, e.g. `*.config.js`, so we list all of them:
+    "include": ["${configDir}/vite.config.ts", "${configDir}/vitest.config.ts", "${configDir}/tailwind.config.ts", "${configDir}/prettier.config.js", "${configDir}/postcss.config.js", "${configDir}/eslint.config.js", "${configDir}/drizzle.config.ts"]
+  }
+  

@@ -1,0 +1,28 @@
+// It's called tsconfig.$name.json (e.g. tsconfig.base.json) instead of $name.tsconfig.json because vscode would show warnings for the latter.
+{
+    "compilerOptions": {
+      "target": "ES2022",
+      "module": "ESNext",
+      "skipLibCheck": true,
+  
+      /* Bundler mode */
+      "moduleResolution": "bundler",
+      "isolatedModules": true,
+      "moduleDetection": "force",
+      "esModuleInterop": true,
+      "allowJs": true,
+      "resolveJsonModule": true,
+  
+      /* Linting */
+      "strict": true,
+      "noUnusedLocals": true,
+      "noUnusedParameters": true,
+      "noFallthroughCasesInSwitch": true,
+      "useDefineForClassFields": true,
+      "verbatimModuleSyntax": true,
+      "noUncheckedIndexedAccess": true,
+      "noImplicitOverride": true,
+      "forceConsistentCasingInFileNames": true,
+    },
+  }
+  

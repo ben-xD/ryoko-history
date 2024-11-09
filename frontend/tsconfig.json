@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+        // Shadcn ui
+        "baseUrl": ".",
+        "paths": {
+          "@/*": ["./src/*"]
+        }
+  },
+  "references": [
+    { "path": "./tsconfig.react.json" },
+    { "path": "./tsconfig.config.json" }
+  ],
+  // need files to be set to [] (empty) to be able to use references that use noEmit. 
+  // The files listed in `include` are still used!
+  "files": []
+}

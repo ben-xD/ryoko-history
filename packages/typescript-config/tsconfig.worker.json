@@ -1,0 +1,21 @@
+// For cloudflare workers
+{
+  "extends": "./tsconfig.base.json",
+    "compilerOptions": {
+      // The output format
+      "target": "ESNext",
+      // the library definitions
+      "lib": ["ESNext"],
+      // the module format/system
+      "module": "ESNext",
+      "types": [
+        "@cloudflare/workers-types/2023-07-01"
+      ],
+      "noEmit": true,
+    
+      "jsx": "react-jsx",
+      "jsxImportSource": "hono/jsx",
+    },
+    "include": ["${configDir}/src"]
+  }
+  
