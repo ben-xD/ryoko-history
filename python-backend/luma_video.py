@@ -4,19 +4,21 @@ from lumaai import AsyncLumaAI
 from dotenv import load_dotenv
 import os
 
-import requests
 import aiohttp
 import asyncio
 
 load_dotenv()
 
 auth_token=os.environ.get("LUMAAI_API_KEY")
-# print(auth_token)
 
-client = AsyncLumaAI(auth_token=os.environ.get("LUMAAI_API_KEY"))
+client = AsyncLumaAI(auth_token=auth_token)
 
-# need a list of two image urls
-async def generate_video(client: AsyncLumaAI):
+# need a list of two image urls per video
+url_list = ["https://i2.wp.com/calvinthecanine.com/wp-content/uploads/2019/11/A35A7884v4.jpg?resize=697%2C465",
+    "https://static.independent.co.uk/s3fs-public/thumbnails/image/2017/06/01/16/mickey-minnie.jpg?width=1200"
+]
+
+async def generate_video(client: AsyncLumaAI, url_list: list[str]):
     generation = await client.generations.create(
         # aspect_ratio="16:9",
         # loop=False,
@@ -24,11 +26,11 @@ async def generate_video(client: AsyncLumaAI):
         keyframes={
         "frame0": {
             "type": "image",
-            "url": "https://i2.wp.com/calvinthecanine.com/wp-content/uploads/2019/11/A35A7884v4.jpg?resize=697%2C465"
+            "url": url_list[0]
         },
         "frame1": {
             "type": "image",
-            "url": "https://static.independent.co.uk/s3fs-public/thumbnails/image/2017/06/01/16/mickey-minnie.jpg?width=1200"
+            "url": url_list[1]
         }
         }
     )
@@ -58,7 +60,6 @@ async def get_video(client: AsyncLumaAI, video_id):
     if generation.state == 'failed':
         print("Video generation failed")
         return
-
     # "assets" is only 1 video url
     if generation.assets is None:
         print("No video asset found")
@@ -66,12 +67,12 @@ async def get_video(client: AsyncLumaAI, video_id):
     url = generation.assets.video
     if url is None:
         print("No video url found")
-        return
+        return    
     await download_video_from_url(url)
 
 
 async def main():
-    video_id = await generate_video(client)
+    video_id = await generate_video(client, url_list)
     await get_video(client, video_id)
 
 if __name__ == "__main__":
