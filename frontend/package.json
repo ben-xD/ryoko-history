@@ -9,7 +9,8 @@
     "lint": "prettier --check src *.config.js *.config.ts && tsc -b && eslint .",
     "lint:fix": "prettier src src *.config.js *.config.ts --write && tsc -b && eslint --fix .",
     "preview": "vite preview",
-    "deploy": "wrangler pages deploy dist"
+    "deploy": "wrangler pages deploy dist",
+    "generate-client": "openapi-typescript http://localhost:8000/openapi.json --output ./src/codegen/client.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
@@ -28,6 +29,7 @@
     "date-fns": "^4.1.0",
     "hono": "^4.6.6",
     "lucide-react": "^0.453.0",
+    "openapi-fetch": "^0.13.0",
     "react": "^18.3.1",
     "react-day-picker": "8.10.1",
     "react-dom": "^18.3.1",
@@ -35,11 +37,12 @@
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
     "uuid": "^10.0.0",
-    "zod": "^3.23.8",
-    "@repo/backend": "workspace:*"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
     "@tailwindcss/container-queries": "^0.1.1",
     "@tanstack/eslint-plugin-query": "^5.59.7",
     "@tanstack/router-devtools": "^1.76.1",
@@ -58,12 +61,11 @@
     "eslint-plugin-react-hooks": "5.1.0-rc-fb9a90fa48-20240614",
     "eslint-plugin-react-refresh": "^0.4.13",
     "globals": "^15.11.0",
+    "openapi-typescript": "^7.4.3",
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.14",
     "typescript": "^5.5.3",
     "typescript-eslint": "^8.7.0",
-    "vite": "^5.4.8",
-    "@repo/eslint-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*"
+    "vite": "^5.4.8"
   }
 }

@@ -24,4 +24,6 @@ dist-ssr
 *.sw?
 *.tsbuildinfo
 
+# Code generation
 src/routeTree.gen.ts
+src/codegen
