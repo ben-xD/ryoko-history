@@ -78,13 +78,15 @@ const VacationForm: React.FC = () => {
 
   const searchMutation = useMutation({
     // { imageFiles, names: data.names, description: data.description }
-    mutationFn: async ({description, imageFiles, names}: { imageFiles: FormValues['images'], names: string[], description: string, transcript: TranscriptEntry[]}) => {
+    mutationFn: async ({description, imageFiles, names, transcript}: { imageFiles: FormValues['images'], names: string[], description: string, transcript: TranscriptEntry[]}) => {
 
+      console.log("transcript >>> ", transcript)
+      
       const formData = new FormData();
       for (const file of imageFiles) {
         formData.append('images', file.file);
       }
-      formData.append('metadata_json_str', JSON.stringify({names, description}));
+      formData.append('metadata_json_str', JSON.stringify({names, description, transcript_messages: transcript}));
 
       const apiPath = "/create-travel-summary/";
       const reply = await fetch(env.backendHttpUrl + apiPath, {
@@ -105,8 +107,6 @@ const VacationForm: React.FC = () => {
       description: data.description,
       transcript, // Include transcript in the mutation
     });
-
-    console.log('Form Data:', data);
   };
 
   return (
