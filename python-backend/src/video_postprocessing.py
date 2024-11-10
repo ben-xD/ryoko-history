@@ -19,7 +19,9 @@ def merge_videos_and_audio(local_generated_video_paths: list[str], audio_path: s
         
         # Pad the video if it is in portrait orientation (864x1168)
         video_with_padding = (
-            input_video.filter('scale', 864, -1)  # Scale width to 864, keep aspect ratio
+            input_video
+            # scale height to 864, keep aspect ratio
+            .filter('scale', -1, 864)  # Scale height to 864, keep aspect ratio
             .filter('pad', 1168, 864, '(ow-iw)/2', '(oh-ih)/2', color='black')  # Pad to 1168x864
         )
         
@@ -30,12 +32,7 @@ def merge_videos_and_audio(local_generated_video_paths: list[str], audio_path: s
     audio_input = ffmpeg.input(audio_path)
     
     # Combine video and audio, and save the output
-    output = (
-        ffmpeg.output(video_concat[0], audio_input, output_path, vcodec="libx264", acodec="aac")
-        .run(overwrite_output=True)
-    )
-    
-    output.run()
+    ffmpeg.output(video_concat[0], audio_input, output_path, vcodec="libx264", acodec="aac").run(overwrite_output=True)
     return output_path
 
 
