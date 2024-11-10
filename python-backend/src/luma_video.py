@@ -1,5 +1,6 @@
 # generate a video from two images using luma api
 import datetime
+from typing import Union
 from lumaai import AsyncLumaAI
 from lumaai.types.generation_create_params import Keyframes
 from dotenv import load_dotenv
@@ -15,25 +16,27 @@ auth_token=os.environ.get("LUMAAI_API_KEY")
 luma_client = AsyncLumaAI(auth_token=auth_token)
 
 # need a list of two image urls per video
-url_list = ["https://i2.wp.com/calvinthecanine.com/wp-content/uploads/2019/11/A35A7884v4.jpg?resize=697%2C465",
+example_urls = ("https://i2.wp.com/calvinthecanine.com/wp-content/uploads/2019/11/A35A7884v4.jpg?resize=697%2C465",
     "https://static.independent.co.uk/s3fs-public/thumbnails/image/2017/06/01/16/mickey-minnie.jpg?width=1200"
-]
+)
 
-async def generate_video_from_1_or_2_images(client: AsyncLumaAI, url_list: list[str]):
-    if len(url_list) > 2:
+ImagePair = Union[tuple[str, str], str]
+
+async def generate_video_from_1_or_2_images(client: AsyncLumaAI, urls: ImagePair):
+    if len(urls) > 2:
         raise ValueError("Only 1 or 2 images are supported")
     
     keyframes: Keyframes = {
         "frame0": {
             "type": "image",
-            "url": url_list[0]
+            "url": urls[0]
         }
         }
     
-    if url_list[1]:
+    if urls[1]:
         keyframes["frame1"] = {
             "type": "image",
-            "url": url_list[1]
+            "url": urls[1]
         }
     
     generation = await client.generations.create(
@@ -78,7 +81,7 @@ async def download_video_from_id(client: AsyncLumaAI, video_id: str):
 
 
 async def main():
-    video_id = await generate_video_from_1_or_2_images(luma_client, url_list)
+    video_id = await generate_video_from_1_or_2_images(luma_client, example_urls)
     await download_video_from_id(luma_client, video_id)
 
 

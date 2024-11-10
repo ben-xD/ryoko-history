@@ -1,3 +1,4 @@
+from datetime import datetime
 import os
 import boto3
 from fastapi import UploadFile
@@ -34,12 +35,12 @@ bucket_name = "ryoko-history-user-photos"
 #     ).client("s3", endpoint_url=endpoint_url)
 # r2 = await create_r2_client()
 
-def upload_object_to_r2(file_path: str, bucket_name: str, key_name: str):
+def upload_object_to_r2(file_path: Path, bucket_name: str, key_name: str):
     # TODO secure to uploads folder only
-    s3.upload_file(file_path, bucket_name, key_name)
+    s3.upload_file(str(file_path), bucket_name, key_name)
 
 def delete_object_from_r2(bucket_name: str, key_name: str):
-    s3.delete_object(Bucket=bucket_name, Key=key_name).delete()
+    s3.delete_object(Bucket=bucket_name, Key=key_name)
     
 def get_object_info_from_r2(bucket_name: str, key_name: str):
     s3.head_object(Bucket=bucket_name, Key=key_name)
@@ -58,12 +59,13 @@ def get_download_url(bucket_name: str, key_name: str, expiration=3600):
         return None    
 
     
-def upload_files_to_r2(local_file_paths: list[str]) -> list[str]:
+def upload_files_to_r2(local_file_paths: list[Path]) -> list[str]:
     download_urls = []
     for file_path in local_file_paths:
         key_name = os.path.basename(file_path)
         upload_object_to_r2(file_path, bucket_name, key_name)
         download_urls.append(get_download_url("uploads", key_name))
+    return download_urls
         
         
 async def delete_files_from_r2(local_file_paths: list[str]):
@@ -75,7 +77,12 @@ async def delete_files_from_r2(local_file_paths: list[str]):
 async def save_files_to_disk(files: list[UploadFile]) -> list[Path]:
     local_file_paths: list[Path] = []
     for file in files:
-        file_path = os.path.join(LOCAL_UPLOAD_DIRECTORY, file.filename)
+        filename = f"{datetime.now().isoformat()}-{file.filename}"
+        if file.filename is None:
+            # Get current date and time
+            filename = f"{datetime.now().isoformat()}-unnamed"
+            print("File has no name, saving as {filename}.")
+        file_path = os.path.join(LOCAL_UPLOAD_DIRECTORY, filename)
         with open(file_path, "wb") as buffer:
             buffer.write(await file.read())
         local_file_paths.append(Path(file_path))

@@ -1,7 +1,5 @@
 {
   "configurations": [
-    {"name":"Python Debugger: FastAPI","cwd": "${workspaceFolder}/python-backend", "type":"debugpy","request":"launch","module":"uvicorn","args":["src.main:app","--reload"],"jinja":true},
-    {"name":"Python Debugger: Current File","type":"debugpy","request":"launch","program":"${file}","console":"integratedTerminal"},
     {
       "type": "node",
       "request": "launch",

@@ -49,4 +49,4 @@ url_list = ["https://i2.wp.com/calvinthecanine.com/wp-content/uploads/2019/11/A3
 ]
 
 if __name__ == "__main__":
-    create_summary_from_images_and_metadata(url_list)
+    create_summary_from_images_and_metadata(url_list, travellers=[], trip_description="A trip to Paris")
