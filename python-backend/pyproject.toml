@@ -4,6 +4,7 @@ dependencies = [
   "boto3>=1.35.57",
   "elevenlabs>=1.12.1",
   "fastapi[standard]>=0.115.4",
+  "ffmpeg-python>=0.2.0",
   "httpx>=0.27.2",
   "lumaai>=1.1.0",
   "mypy>=1.13.0",
@@ -28,3 +29,8 @@ dev-dependencies = [
   "mypy-boto3>=1.35.57",
   "types-requests>=2.32.0.20241016",
 ]
+
+[tool.mypy]
+[[tool.mypy.overrides]]
+ignore_missing_imports = true
+module = ["ffmpeg"]
