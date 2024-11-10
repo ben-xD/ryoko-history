@@ -15,3 +15,7 @@ os.makedirs(GENERATED_VIDEOS_DIRECTORY, exist_ok=True)
 # New for post processed video
 FINAL_VIDEOS_DIRECTORY = Path(os.path.join(os.path.dirname(__file__), "./final_videos")).resolve()
 os.makedirs(FINAL_VIDEOS_DIRECTORY, exist_ok=True)
+
+# New generated audio
+GENERATED_AUDIO_DIRECTORY = Path(os.path.join(os.path.dirname(__file__), "./generated_audio")).resolve()
+os.makedirs(GENERATED_AUDIO_DIRECTORY, exist_ok=True)

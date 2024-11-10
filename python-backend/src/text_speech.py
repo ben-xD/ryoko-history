@@ -1,7 +1,9 @@
-import requests
+from datetime import datetime
 import os
+import requests
 from dotenv import load_dotenv
-from env import env
+from src.env import env
+from src.local_paths import GENERATED_AUDIO_DIRECTORY
 
 load_dotenv()
 
@@ -34,7 +36,7 @@ summary = """
 アリスとボブの旅行からのすべての写真は、愛、発見、そしてパリの永遠の魅力の物語を語ります。象徴的なランドマークからおとぎ話のような出会いに至るまで、彼らの旅行は訪れた場所だけでなく、一緒に作り上げた忘れられない思い出についてであり、彼らの心にパリの精神を永遠に捉えました。
 """
 
-def generate_speech(summary:str):
+def generate_speech(summary:str) -> str:
   data = {
     "text": summary,
     # "model_id": "eleven_monolingual_v1",
@@ -49,13 +51,19 @@ def generate_speech(summary:str):
   response = requests.post(url, json=data, headers=headers)
 
   if response.status_code == 200 and response.headers.get("Content-Type") == "audio/mpeg":
-      with open('output.mp3', 'wb') as f:
+      os.makedirs(GENERATED_AUDIO_DIRECTORY, exist_ok=True)
+      filename = f"{datetime.now().isoformat()}_generated_audio.mp4"
+      output_path = os.path.join(GENERATED_AUDIO_DIRECTORY, filename)
+      with open(output_path, 'wb') as f:
           for chunk in response.iter_content(chunk_size=CHUNK_SIZE):
               if chunk:
                   f.write(chunk)
       print("Speech generated successfully")
+      return output_path
   else:
       print("Error:", response.status_code, response.text)
+      return None
 
 
-generate_speech(summary)
+if __name__ == "__main__":
+  generate_speech(summary)

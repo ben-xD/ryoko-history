@@ -1,7 +1,7 @@
 import asyncio
 import json
 from pathlib import Path
-from typing import Literal, Optional, Tuple
+from typing import Optional, Tuple
 
 from src.local_paths import LOCAL_UPLOAD_DIRECTORY
 from src.openai_summary import TranscriptMessage, create_summary_from_images_and_metadata
@@ -15,6 +15,7 @@ from pydantic import BaseModel
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import FileResponse
 
+from src.text_speech import generate_speech
 from src.video_postprocessing import merge_videos_and_audio
 
 app = FastAPI()
@@ -87,9 +88,9 @@ async def create_travel_summary(
     summary = create_summary_from_images_and_metadata(remote_file_paths, metadata.names, metadata.description, metadata.transcript_messages)
     
     # TODO use elevenlabs to generate voice over for summary, and store locally
-    # voice_over = generate_voice_over(summary)
-    # Temporary audio
-    voice_over_path = "/Users/zen/Downloads/holy-children-s-choir-loop_78bpm_A_major.wav"
+    voice_over_path = generate_speech(summary)
+    # Temporary test audio
+    # voice_over_path = "/Users/zen/Downloads/holy-children-s-choir-loop_78bpm_A_major.wav"
 
     final_video_path = merge_videos_and_audio(local_generated_video_paths, voice_over_path)
     return final_video_path
