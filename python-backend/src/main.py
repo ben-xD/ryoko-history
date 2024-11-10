@@ -2,7 +2,7 @@ import asyncio
 from pathlib import Path
 from typing import Optional
 
-from src.routes import manual_test_apis
+from src.routes import conversation, manual_test_apis
 from src.file_upload import LOCAL_UPLOAD_DIRECTORY, save_files_to_disk, upload_user_photos_to_r2_bucket
 from src.luma_video import download_video_from_url, generate_video_from_1_or_2_images, luma_client
 from src.luma_video import ImagePair
@@ -25,6 +25,7 @@ app.add_middleware(
 )
 
 app.include_router(manual_test_apis.router)
+app.include_router(conversation.router)
 
 @app.get("/")
 def read_root():
