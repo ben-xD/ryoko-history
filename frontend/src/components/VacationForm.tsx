@@ -5,6 +5,8 @@ import VideoPlayer from './VideoPlayer';
 import {client} from '@/clients/httpClient';
 import { useMutation } from '@tanstack/react-query';
 import { env } from '../env';
+import { useAtom, useAtomValue } from 'jotai';
+import { transcriptAtom } from './VoiceAgent';
 
 interface ExifData {
   [key: string]: unknown;
@@ -12,13 +14,23 @@ interface ExifData {
   longitude?: number | null;
 };
 
+interface TranscriptEntry {
+  source: "ai" | "user";
+  message: string;
+}
+
 interface FormValues {
-  names: {name: string}[];
+  names: { name: string }[];
   images: { file: File; exifData: ExifData | null }[];
   description: string;
+  transcript: TranscriptEntry[];
 }
 
 const VacationForm: React.FC = () => {
+  const transcript = useAtomValue(transcriptAtom);
+
+  console.log("transcript 💎💎💎 ", transcript)
+  
   const { control, handleSubmit, setValue, register } = useForm<FormValues>({
     defaultValues: {
       names: [{ name: '' }],
@@ -66,7 +78,7 @@ const VacationForm: React.FC = () => {
 
   const searchMutation = useMutation({
     // { imageFiles, names: data.names, description: data.description }
-    mutationFn: async ({description, imageFiles, names}: { imageFiles: FormValues['images'], names: string[], description: string}) => {
+    mutationFn: async ({description, imageFiles, names}: { imageFiles: FormValues['images'], names: string[], description: string, transcript: TranscriptEntry[]}) => {
 
       const formData = new FormData();
       for (const file of imageFiles) {
@@ -87,14 +99,18 @@ const VacationForm: React.FC = () => {
   });
 
   const onSubmit: SubmitHandler<FormValues> = (data) => {
-    searchMutation.mutate({ imageFiles, names: data.names.map(n => n.name), description: data.description });
+    searchMutation.mutate({
+      imageFiles,
+      names: data.names.map(n => n.name),
+      description: data.description,
+      transcript, // Include transcript in the mutation
+    });
 
     console.log('Form Data:', data);
   };
 
   return (
     <div className="flex flex-col items-center">
-      <h2 style={{color: 'white'}} className="text-2xl font-semibold text-gray-800 mt-4">Ryoko Form</h2>
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="max-w-lg mx-auto p-6 bg-white shadow-md rounded-md space-y-6 mt-6 mb-6"
