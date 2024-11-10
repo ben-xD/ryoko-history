@@ -4,6 +4,7 @@ import boto3
 from fastapi import UploadFile
 from pathlib import Path
 from botocore.config import Config
+import uuid
 
 from src.local_paths import LOCAL_UPLOAD_DIRECTORY
 
@@ -70,7 +71,8 @@ def upload_user_photos_to_r2_bucket(local_file_paths: list[Path]) -> list[str]:
 async def save_files_to_disk(files: list[UploadFile]) -> list[Path]:
     local_file_paths: list[Path] = []
     for file in files:
-        filename = f"{datetime.now().isoformat()}-{file.filename}"
+        unique_id = uuid.uuid4()
+        filename = f"{datetime.now().isoformat()}-{unique_id}-{file.filename}"
         if file.filename is None:
             # Get current date and time
             filename = f"{datetime.now().isoformat()}-unnamed"

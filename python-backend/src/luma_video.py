@@ -1,6 +1,7 @@
 # generate a video from two images using luma api
 import datetime
 from typing import Union
+import uuid
 from lumaai import NOT_GIVEN, AsyncLumaAI, NotGiven
 from lumaai.types.generation_create_params import Keyframes
 from dotenv import load_dotenv
@@ -85,9 +86,10 @@ async def download_video_from_url(url: str):
 
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:
+            unique_id = uuid.uuid4()
             response_content = await response.read()
             # Current time formatted compactly: luma_video_20210930_123456.mp4
-            file_name = f"{GENERATED_VIDEOS_DIRECTORY}/luma_video_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.mp4"
+            file_name = f"{GENERATED_VIDEOS_DIRECTORY}/luma_video_{unique_id}_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.mp4"
             with open(file_name, 'wb') as f:
                 f.write(response_content)
                 print(f"Video downloaded to {file_name}")

@@ -82,19 +82,23 @@ async def create_travel_summary(
         generate_and_download_video_from(pair) for pair in paired_remote_file_paths
     ]
     local_generated_video_paths = await asyncio.gather(*tasks)
-    print(local_generated_video_paths)
+    print("local_generated_video_paths: ", local_generated_video_paths)
+    # Remove None from local_generated_video_paths
+    local_generated_video_paths = [path for path in local_generated_video_paths if path is not None]
     
-    # TODO call OpenAI API to generate summary based on images and metadata
     summary = create_summary_from_images_and_metadata(remote_file_paths, metadata.names, metadata.description, metadata.transcript_messages)
     translated_summary = translate_summary(summary)
 
     # TODO use elevenlabs to generate voice over for summary, and store locally
-    voice_over_path = generate_speech(translated_summary)
+    # voice_over_path = generate_speech(summary)
+    translated_voice_over_path = generate_speech(translated_summary)
     # Temporary test audio
     # voice_over_path = "/Users/zen/Downloads/holy-children-s-choir-loop_78bpm_A_major.wav"
 
-    final_video_path = merge_videos_and_audio(local_generated_video_paths, voice_over_path)
-    return final_video_path
+    # final_video_path = merge_videos_and_audio(local_generated_video_paths, voice_over_path)
+    translated_final_video_path = merge_videos_and_audio(local_generated_video_paths, translated_voice_over_path)
+    return translated_final_video_path
+    # return [final_video_path, translated_final_video_path]
 
 
 @app.get("/uploads/{filename}")
