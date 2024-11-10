@@ -2,6 +2,7 @@ from typing import Literal, Optional
 from openai import OpenAI
 from pydantic import BaseModel
 from src.env import env
+from src.languages import Language
 
 
 openaiModel = "gpt-4-turbo"
@@ -53,8 +54,8 @@ def create_summary_from_images_and_metadata(image_urls: list[str], travellers: l
     return summary_content
 
 
-def translate_summary(summary_content: str):
-    prompt = """Translate the text into Japanese. It should sound like travellers are the narrators of the story.""" + summary_content + "\n"
+def translate_summary(summary_content: str, language: Language):
+    prompt = f"""Translate the text into {language.value}. It should sound like travellers are the narrators of the story.""" + summary_content + "\n"
     translation = openai_client.chat.completions.create(
         messages=[
             {
@@ -89,4 +90,4 @@ if __name__ == "__main__":
     if original_summary is None:
         print("Failed to generate summary")
     else:
-        translated_summary = translate_summary(original_summary)
+        translated_summary = translate_summary(original_summary, Language.JAPANESE)

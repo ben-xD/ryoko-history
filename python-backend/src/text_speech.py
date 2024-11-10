@@ -3,23 +3,28 @@ import os
 from typing import Optional
 import requests
 from src.env import env
+from src.languages import Language
 from src.local_paths import GENERATED_AUDIO_DIRECTORY
 
-# English
-# agent_id = "Xb7hH8MSUJpSbSDYk0k2"
 
-# Japanese
-# agent_id = "3JDquces8E8bkmvbh6Bc"
-agent_id = "hBWDuZMNs32sP5dKzMuc"
+agent_id_by_language: dict[Language, str] = {
+  Language.ENGLISH: "Xb7hH8MSUJpSbSDYk0k2",
+  # Language.JAPANESE: "3JDquces8E8bkmvbh6Bc"
+  Language.JAPANESE: "hBWDuZMNs32sP5dKzMuc",
+  Language.MALAY: "djUbJhnXETnX31p3rgun",
+  Language.GERMAN: "Fghah4fztZORbiKfIGAs",
+  Language.FRENCH: "NyxenPOqNyllHIzSoPbJ"
+}
+
 
 CHUNK_SIZE = 1024
-url = "https://api.elevenlabs.io/v1/text-to-speech/"+ agent_id
 
 headers = {
   "Accept": "audio/mpeg",
   "Content-Type": "application/json",
   "xi-api-key": env.ELEVENLABS_API_KEY
 }
+  
 
 # example_summary = """
 # Ah, Paris, the City of Love. As I scroll through these photos, I can't help but feel a sense of wonder and enchantment. From the iconic Eiffel Tower standing tall against the sky to the charming streets filled with cozy cafes and bustling markets, every corner of this city tells a unique story. 
@@ -34,7 +39,13 @@ example_summary = """
 アリスとボブの旅行からのすべての写真は、愛、発見、そしてパリの永遠の魅力の物語を語ります。象徴的なランドマークからおとぎ話のような出会いに至るまで、彼らの旅行は訪れた場所だけでなく、一緒に作り上げた忘れられない思い出についてであり、彼らの心にパリの精神を永遠に捉えました。
 """
 
-def generate_speech(summary:str) -> Optional[str]:
+
+def generate_speech(summary:str, language: Language) -> Optional[str]:
+  agent_id = agent_id_by_language.get(language)
+  if agent_id is None:
+      print("Agent ID not found for the given language")
+      return None
+  
   data = {
     "text": summary,
     # "model_id": "eleven_monolingual_v1",
@@ -46,11 +57,12 @@ def generate_speech(summary:str) -> Optional[str]:
     }
   }
 
+  url = "https://api.elevenlabs.io/v1/text-to-speech/"+ agent_id
   response = requests.post(url, json=data, headers=headers)
 
   if response.status_code == 200 and response.headers.get("Content-Type") == "audio/mpeg":
       os.makedirs(GENERATED_AUDIO_DIRECTORY, exist_ok=True)
-      filename = f"{datetime.now().isoformat()}_generated_audio.mp4"
+      filename = f"{datetime.now().isoformat()}_{language.value}_generated_audio.mp4"
       output_path = os.path.join(GENERATED_AUDIO_DIRECTORY, filename)
       with open(output_path, 'wb') as f:
           for chunk in response.iter_content(chunk_size=CHUNK_SIZE):
@@ -64,4 +76,4 @@ def generate_speech(summary:str) -> Optional[str]:
 
 
 if __name__ == "__main__":
-  generate_speech(example_summary)
+  generate_speech(example_summary, Language.JAPANESE)

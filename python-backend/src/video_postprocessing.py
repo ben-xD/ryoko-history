@@ -2,14 +2,15 @@ from datetime import datetime
 import os
 import ffmpeg
 
+from src.languages import Language
 from src.local_paths import FINAL_VIDEOS_DIRECTORY
 
 # TODO update this function to pillarbox horizontal/portrait videos to be landscape
 # This function was designed to accept videos from Luma, 1168x864 or 864x1168
-def merge_videos_and_audio(local_generated_video_paths: list[str], audio_path: str) -> str:
+def merge_videos_and_audio(local_generated_video_paths: list[str], language: Language, audio_path: str) -> str:
     os.makedirs(FINAL_VIDEOS_DIRECTORY, exist_ok=True)
     
-    filename = f"{datetime.now().isoformat()}_generated.mp4"
+    filename = f"{datetime.now().isoformat()}_{language.value}_generated.mp4"
     output_path = os.path.join(FINAL_VIDEOS_DIRECTORY, filename)
     
     # Process videos to ensure they are in landscape format with padding if needed
@@ -41,5 +42,5 @@ if __name__ == "__main__":
     audio = "/Users/zen/Downloads/holy-children-s-choir-loop_78bpm_A_major.wav"
     video_directory = "/Users/zen/repos/ryoko-history/python-backend/src/ai_generated_videos/"
     videos = [os.path.join(video_directory, f) for f in os.listdir(video_directory) if f.endswith(".mp4")]
-    merged_video = merge_videos_and_audio(videos, audio)
+    merged_video = merge_videos_and_audio(videos, Language.JAPANESE, audio)
     

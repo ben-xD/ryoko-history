@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 from typing import Optional, Tuple
 
+from src.languages import Language
 from src.local_paths import LOCAL_UPLOAD_DIRECTORY
 from src.openai_summary import TranscriptMessage, create_summary_from_images_and_metadata, translate_summary
 from src.routes import conversation, manual_test_apis
@@ -37,10 +38,11 @@ def read_root():
     return "OK"
 
 
-class CreateTravelSummaryMetadata(BaseModel, strict=True):
+class CreateTravelSummaryMetadata(BaseModel):    
     names: list[str]
     description: Optional[str] = None
     transcript_messages: list[TranscriptMessage] = []
+    languages: list[Language] = [Language.ENGLISH]
 
 MINIMUM_IMAGES = 2
 
@@ -61,7 +63,7 @@ async def do_not_use() -> Tuple[CreateTravelSummaryMetadata]:
 async def create_travel_summary(
     images: list[UploadFile] = File(...),
     metadata_json_str: str = Form(...)
-    ):
+    ) -> list[str]:
     metadata_dict = json.loads(metadata_json_str)
     metadata = CreateTravelSummaryMetadata(**metadata_dict)
     local_file_paths = await save_files_to_disk(images)
@@ -69,9 +71,9 @@ async def create_travel_summary(
     remote_file_paths: list[str] = upload_user_photos_to_r2_bucket(local_file_paths)
     # [(1,2), (3,4), (5)]
     paired_remote_file_paths: list[ImagePair] = []
-    for i in range(0, len(remote_file_paths), 2):
+    for i in range(0, len(remote_file_paths), 1):
         if i + 1 >= len(remote_file_paths):
-            # If there's an odd number of images, just use the last one
+            # If there's an odd number of images, just use the last oe
             paired_remote_file_paths.append((remote_file_paths[i],))
         else:
             pair = (remote_file_paths[i], remote_file_paths[i + 1])
@@ -88,20 +90,17 @@ async def create_travel_summary(
     summary = create_summary_from_images_and_metadata(remote_file_paths, metadata.names, metadata.description, metadata.transcript_messages)
     if summary is None:
         raise HTTPException(status_code=500, detail="Failed to generate summary")
-    translated_summary = translate_summary(summary)
 
-    # TODO use elevenlabs to generate voice over for summary, and store locally
-    # voice_over_path = generate_speech(summary)
-    translated_voice_over_path = generate_speech(translated_summary)
-    if translated_voice_over_path is None:
-        raise HTTPException(status_code=500, detail="Failed to generate translated voice over")
-    # Temporary test audio
-    # voice_over_path = "/Users/zen/Downloads/holy-children-s-choir-loop_78bpm_A_major.wav"
+    translated_final_video_paths: list[str] = []
+    for language in set(metadata.languages):
+        translated_summary = translate_summary(summary, language)
+        translated_voice_over_path = generate_speech(translated_summary, language)
+        if translated_voice_over_path is None:
+            raise HTTPException(status_code=500, detail="Failed to generate translated voice over")
 
-    # final_video_path = merge_videos_and_audio(local_generated_video_paths, voice_over_path)
-    translated_final_video_path = merge_videos_and_audio(local_generated_video_paths, translated_voice_over_path)
-    return translated_final_video_path
-    # return [final_video_path, translated_final_video_path]
+        translated_final_video_path = merge_videos_and_audio(local_generated_video_paths, language, translated_voice_over_path)
+        translated_final_video_paths.append(translated_final_video_path)
+    return translated_final_video_paths
 
 
 @app.get("/uploads/{filename}")

@@ -7,6 +7,7 @@ import { useAtomValue } from 'jotai';
 import { transcriptAtom } from './VoiceAgent';
 import VideoPlayer from './VideoPlayer';
 import type {CreateTravelSummaryMetadata} from '@/clients/httpClient';
+import { Languages } from './Languages';
 
 interface ExifData {
   [key: string]: unknown;
@@ -24,6 +25,7 @@ interface FormValues {
   images: { file: File; exifData: ExifData | null }[];
   description: string;
   transcript: TranscriptEntry[];
+  languages: {language: Languages}[];
 }
 
 const VacationForm: React.FC = () => {
@@ -36,12 +38,18 @@ const VacationForm: React.FC = () => {
       names: [{ name: '' }],
       images: [],
       description: '',
+      languages: [{language: Languages.ENGLISH}]
     },
   });
 
   const { fields: nameFields, append: addName } = useFieldArray({
     control,
     name: 'names',
+  });
+
+  const { fields: languageFields, append: addLanguage } = useFieldArray({
+    control,
+    name: 'languages',
   });
 
   const [imageFiles, setImageFiles] = useState<FormValues['images']>([]);
@@ -54,8 +62,8 @@ const VacationForm: React.FC = () => {
       files.map(async (file) => {
         try {
           const exifData = await exifr.parse(file, { gps: true });
-          const latitude = exifData.GPSLatitude ? exifData.latitude : null;
-          const longitude = exifData.GPSLongitude ? exifData.longitude : null;
+          const latitude = exifData.GPSLatitude !== undefined ? exifData.latitude : null;
+          const longitude = exifData.GPSLongitude !== undefined ? exifData.longitude : null;
           
           return {
             file,
@@ -78,7 +86,7 @@ const VacationForm: React.FC = () => {
 
   const searchMutation = useMutation({
     // { imageFiles, names: data.names, description: data.description }
-    mutationFn: async ({description, imageFiles, names, transcript}: { imageFiles: FormValues['images'], names: string[], description: string, transcript: TranscriptEntry[]}) => {
+    mutationFn: async ({description, imageFiles, names, transcript, languages}: { imageFiles: FormValues['images'], names: string[], description: string, transcript: TranscriptEntry[], languages: Languages[]}) => {
 
       console.log("transcript >>> ", transcript)
       
@@ -86,7 +94,7 @@ const VacationForm: React.FC = () => {
       for (const file of imageFiles) {
         formData.append('images', file.file);
       }
-      formData.append('metadata_json_str', JSON.stringify({names, description, transcript_messages: transcript} satisfies CreateTravelSummaryMetadata));
+      formData.append('metadata_json_str', JSON.stringify({names, description, transcript_messages: transcript, languages} satisfies CreateTravelSummaryMetadata));
 
       const apiPath = "/create-travel-summary/";
       const reply = await fetch(env.backendHttpUrl + apiPath, {
@@ -105,7 +113,8 @@ const VacationForm: React.FC = () => {
       imageFiles,
       names: data.names.map(n => n.name),
       description: data.description,
-      transcript, // Include transcript in the mutation
+      transcript,
+      languages: data.languages.map(l => l.language)
     });
   };
 
@@ -113,22 +122,22 @@ const VacationForm: React.FC = () => {
     <div style={{ minHeight: "80vh" }} className="flex flex-col items-center">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="max-w-lg mx-auto p-6 bg-white shadow-md rounded-md space-y-6 mt-6 mb-6"
+        className="mx-auto my-6 max-w-lg space-y-6 rounded-md bg-white p-6 shadow-md"
       >
         <div>
-          <label className="block text-gray-700 font-medium mb-1">Names:</label>
+          <label className="mb-1 block font-medium text-gray-700">Names:</label>
           {nameFields.map((field, index) => (
-            <div key={field.id} className="flex items-center space-x-2 mb-2">
+            <div key={field.id} className="mb-2 flex items-center space-x-2">
               <input
                 {...register(`names.${index}.name` as const, { required: 'Name is required' })}
                 placeholder="Enter a name"
-                className="flex-1 p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="flex-1 rounded-md border p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               {index === nameFields.length - 1 && (
                 <button
                   type="button"
                   onClick={() => addName({ name: '' })}
-                  className="p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none"
+                  className="rounded-md bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none"
                 >
                   +
                 </button>
@@ -138,26 +147,53 @@ const VacationForm: React.FC = () => {
         </div>
   
         <div>
-          <label className="block text-gray-700 font-medium mb-1">Image Upload:</label>
+          <label className="mb-1 block font-medium text-gray-700">Image Upload:</label>
           <input
             type="file"
             accept="image/*"
             multiple
             onChange={handleImageSelect}
-            className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-md border p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
+
+        <div>
+      <label className="mb-1 block font-medium text-gray-700">Languages to generate:</label>
+      {languageFields.map((field, index) => (
+        <div key={field.id} className="mb-2 flex items-center space-x-2">
+        <select
+          {...register(`languages.${index}.language` as const, { required: 'Language is required' })}
+          className="flex-1 rounded-md border p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700"
+        >
+          {Object.values(Languages).map((language) => (
+            <option key={language} value={language}>
+              {language}
+            </option>
+          ))}
+        </select>
+        {index === languageFields.length - 1 && (
+          <button
+            type="button"
+            onClick={() => addLanguage({ language: Languages.ENGLISH })}
+            className="rounded-md bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none"
+          >
+            +
+          </button>
+        )}
+      </div>
+      ))}
+    </div>
   
         <div>
-          <label className="block text-gray-700 font-medium mb-1">Description:</label>
+          <label className="mb-1 block font-medium text-gray-700">Description:</label>
           <textarea
             {...register('description', { required: 'Description is required' })}
             placeholder="Enter a description"
-            className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full rounded-md border p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
   
-        <button type="submit" className="w-full p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none">
+        <button type="submit" className="w-full rounded-md bg-blue-500 p-2 text-white hover:bg-blue-600 focus:outline-none">
           Submit
         </button>
       </form>
