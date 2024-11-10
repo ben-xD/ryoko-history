@@ -7,8 +7,7 @@ from src.local_paths import LOCAL_UPLOAD_DIRECTORY
 from src.openai_summary import TranscriptMessage, create_summary_from_images_and_metadata, translate_summary
 from src.routes import conversation, manual_test_apis
 from src.file_upload import save_files_to_disk, upload_user_photos_to_r2_bucket
-from src.luma_video import download_video_from_url, generate_video_from_1_or_2_images, luma_client
-from src.luma_video import ImagePair
+from src.luma_video import download_video_from_url, generate_video_from_1_or_2_images, luma_client, ImagePair
 
 from fastapi import FastAPI, File, Form, UploadFile, HTTPException
 from pydantic import BaseModel
@@ -55,7 +54,7 @@ async def generate_and_download_video_from(image_pair: ImagePair):
 
 @app.get("/do-not-use")
 async def do_not_use() -> Tuple[CreateTravelSummaryMetadata]:
-    return "This endpoint is not meant to be used, but just for API generation"
+    return "This endpoint is not meant to be used, but just for API generation" # type: ignore [return-value]
 
 
 @app.post("/create-travel-summary/")
@@ -87,11 +86,15 @@ async def create_travel_summary(
     local_generated_video_paths = [path for path in local_generated_video_paths if path is not None]
     
     summary = create_summary_from_images_and_metadata(remote_file_paths, metadata.names, metadata.description, metadata.transcript_messages)
+    if summary is None:
+        raise HTTPException(status_code=500, detail="Failed to generate summary")
     translated_summary = translate_summary(summary)
 
     # TODO use elevenlabs to generate voice over for summary, and store locally
     # voice_over_path = generate_speech(summary)
     translated_voice_over_path = generate_speech(translated_summary)
+    if translated_voice_over_path is None:
+        raise HTTPException(status_code=500, detail="Failed to generate translated voice over")
     # Temporary test audio
     # voice_over_path = "/Users/zen/Downloads/holy-children-s-choir-loop_78bpm_A_major.wav"
 

@@ -1,22 +1,18 @@
 # generate a video from two images using luma api
 import datetime
+import os
 from typing import Union
 import uuid
 from lumaai import NOT_GIVEN, AsyncLumaAI, NotGiven
 from lumaai.types.generation_create_params import Keyframes
-from dotenv import load_dotenv
-import os
 
 import aiohttp
 import asyncio
 
+from src.env import env
 from src.local_paths import GENERATED_VIDEOS_DIRECTORY
 
-load_dotenv()
-
-auth_token=os.environ.get("LUMAAI_API_KEY")
-
-luma_client = AsyncLumaAI(auth_token=auth_token)
+luma_client = AsyncLumaAI(auth_token=env.LUMAAI_API_KEY)
 
 # need a list of two image urls per video
 example_urls = ("https://i2.wp.com/calvinthecanine.com/wp-content/uploads/2019/11/A35A7884v4.jpg?resize=697%2C465",

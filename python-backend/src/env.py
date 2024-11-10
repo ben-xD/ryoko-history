@@ -1,8 +1,5 @@
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
-from dotenv import load_dotenv
-
-load_dotenv()
 
 
 class EnvSchema(BaseSettings):
@@ -18,3 +15,6 @@ class EnvSchema(BaseSettings):
     ELEVENLABS_API_KEY: str = Field(None, min_length=1)
     
 env = EnvSchema() # type: ignore [call-arg]
+
+if __name__ == "__main__":
+    print(env.model_dump())
