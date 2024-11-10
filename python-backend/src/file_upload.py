@@ -21,10 +21,10 @@ os.makedirs(LOCAL_UPLOAD_DIRECTORY, exist_ok=True)
 s3 = boto3.client(service_name='s3',
   endpoint_url = endpoint_url,
   aws_access_key_id = env.CLOUDFLARE_R2_ACCESS_KEY_ID,
-  aws_secret_access_key = env.CLOUDFLARE_R2_ACCESS_KEY_SECRET
+  aws_secret_access_key = env.CLOUDFLARE_R2_ACCESS_KEY_SECRET,
+  # To avoid generating the presigned URLs with v2 by default, which is not supported by R2 (it rejects with `Unauthorized: SigV2 authorization is not supported. Please use SigV4 instead.`)
+  config=boto3.session.Config(signature_version='v4')
 )
-
-bucket_name = "ryoko-history-user-photos"
 
 # Async API. Not a nice way of managing the lifetime of a client. Unsure how long it will last, and if it will reauthenticate, etc.
 # def create_r2_client():
@@ -59,20 +59,15 @@ def get_download_url(bucket_name: str, key_name: str, expiration=3600):
         return None    
 
     
-def upload_files_to_r2(local_file_paths: list[Path]) -> list[str]:
+user_photos_bucket_name = "ryoko-history-user-photos"
+def upload_user_photos_to_r2_bucket(local_file_paths: list[Path]) -> list[str]:
     download_urls = []
     for file_path in local_file_paths:
         key_name = os.path.basename(file_path)
-        upload_object_to_r2(file_path, bucket_name, key_name)
-        download_urls.append(get_download_url("uploads", key_name))
+        upload_object_to_r2(file_path, user_photos_bucket_name, key_name)
+        download_urls.append(get_download_url(bucket_name=user_photos_bucket_name, key_name=key_name))
     return download_urls
-        
-        
-async def delete_files_from_r2(local_file_paths: list[str]):
-    for file_path in local_file_paths:
-        key_name = os.path.basename(file_path)
-        delete_object_from_r2(bucket_name, key_name)
-        
+    
         
 async def save_files_to_disk(files: list[UploadFile]) -> list[Path]:
     local_file_paths: list[Path] = []

@@ -18,3 +18,9 @@
 - start backend: `./scripts/dev.sh`
 - Visit http://localhost:8000/docs use the OpenAPI page
 - The API is on http://localhost:8000/
+
+
+## TODOs
+
+- Wait for AI video to be generated and download them, stitch them together with ffmpeg
+- Use ElevenLabs conversational AI to get chat

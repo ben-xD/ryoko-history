@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Optional
 
 from src.routes import manual_test_apis
-from src.file_upload import LOCAL_UPLOAD_DIRECTORY, save_files_to_disk, upload_files_to_r2
+from src.file_upload import LOCAL_UPLOAD_DIRECTORY, save_files_to_disk, upload_user_photos_to_r2_bucket
 from src.luma_video import generate_video_from_1_or_2_images, download_video_from_id, luma_client
 from src.luma_video import ImagePair
 
@@ -51,7 +51,7 @@ async def create_travel_summary(
     # metadata = CreateTravelSummaryMetadata(**metadata_dict)
     local_file_paths = await save_files_to_disk(images)
     
-    remote_file_paths: list[str] = upload_files_to_r2(local_file_paths)
+    remote_file_paths: list[str] = upload_user_photos_to_r2_bucket(local_file_paths)
     # [(1,2), (3,4), (5)]
     paired_remote_file_paths: list[ImagePair] = []
     for i in range(0, len(remote_file_paths), 2):

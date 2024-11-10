@@ -19,7 +19,7 @@ dependencies = [
 # "aioboto3>=13.2.0",
 # "types-aioboto3[essential]>=13.2.0.post1",
 description = "Add your description here"
-name = "python-backend"
+name = "ryoko"
 readme = "README.md"
 requires-python = ">=3.12"
 version = "0.1.0"

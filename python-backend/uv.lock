@@ -867,57 +867,6 @@ wheels = [
 ]
 
 [[package]]
-name = "python-backend"
-version = "0.1.0"
-source = { virtual = "." }
-dependencies = [
-    { name = "aiohttp" },
-    { name = "boto3" },
-    { name = "elevenlabs" },
-    { name = "fastapi", extra = ["standard"] },
-    { name = "lumaai" },
-    { name = "mypy" },
-    { name = "openai" },
-    { name = "pillow" },
-    { name = "pydantic" },
-    { name = "pydantic-settings" },
-    { name = "python-multipart" },
-    { name = "ruff" },
-    { name = "starlette" },
-    { name = "uvicorn", extra = ["standard"] },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "boto3-stubs", extra = ["essential"] },
-    { name = "types-requests" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "aiohttp", specifier = ">=3.10.10" },
-    { name = "boto3", specifier = ">=1.35.57" },
-    { name = "elevenlabs", specifier = ">=1.12.1" },
-    { name = "fastapi", extras = ["standard"], specifier = ">=0.115.4" },
-    { name = "lumaai", specifier = ">=1.1.0" },
-    { name = "mypy", specifier = ">=1.13.0" },
-    { name = "openai", specifier = ">=1.54.3" },
-    { name = "pillow", specifier = ">=11.0.0" },
-    { name = "pydantic", specifier = ">=2.9.2" },
-    { name = "pydantic-settings", specifier = ">=2.6.1" },
-    { name = "python-multipart", specifier = ">=0.0.17" },
-    { name = "ruff", specifier = ">=0.7.3" },
-    { name = "starlette", specifier = ">=0.41.2" },
-    { name = "uvicorn", extras = ["standard"], specifier = ">=0.32.0" },
-]
-
-[package.metadata.requires-dev]
-dev = [
-    { name = "boto3-stubs", extras = ["essential"], specifier = ">=1.35.57" },
-    { name = "types-requests", specifier = ">=2.32.0.20241016" },
-]
-
-[[package]]
 name = "python-dateutil"
 version = "2.9.0.post0"
 source = { registry = "https://pypi.org/simple" }
@@ -1024,6 +973,57 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/b0/5c/efdb4777686683a8edce94ffd812783bddcd3d2454d38c5ac193fef7c500/ruff-0.7.3-py3-none-win32.whl", hash = "sha256:4ba81a5f0c5478aa61674c5a2194de8b02652f17addf8dfc40c8937e6e7d79fc", size = 8611095 },
     { url = "https://files.pythonhosted.org/packages/bb/b8/28fbc6a4efa50178f973972d1c84b2d0a33cdc731588522ab751ac3da2f5/ruff-0.7.3-py3-none-win_amd64.whl", hash = "sha256:588a9ff2fecf01025ed065fe28809cd5a53b43505f48b69a1ac7707b1b7e4088", size = 9418283 },
     { url = "https://files.pythonhosted.org/packages/3f/77/b587cba6febd5e2003374f37eb89633f79f161e71084f94057c8653b7fb3/ruff-0.7.3-py3-none-win_arm64.whl", hash = "sha256:1713e2c5545863cdbfe2cbce21f69ffaf37b813bfd1fb3b90dc9a6f1963f5a8c", size = 8725228 },
+]
+
+[[package]]
+name = "ryoko"
+version = "0.1.0"
+source = { virtual = "." }
+dependencies = [
+    { name = "aiohttp" },
+    { name = "boto3" },
+    { name = "elevenlabs" },
+    { name = "fastapi", extra = ["standard"] },
+    { name = "lumaai" },
+    { name = "mypy" },
+    { name = "openai" },
+    { name = "pillow" },
+    { name = "pydantic" },
+    { name = "pydantic-settings" },
+    { name = "python-multipart" },
+    { name = "ruff" },
+    { name = "starlette" },
+    { name = "uvicorn", extra = ["standard"] },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "boto3-stubs", extra = ["essential"] },
+    { name = "types-requests" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "aiohttp", specifier = ">=3.10.10" },
+    { name = "boto3", specifier = ">=1.35.57" },
+    { name = "elevenlabs", specifier = ">=1.12.1" },
+    { name = "fastapi", extras = ["standard"], specifier = ">=0.115.4" },
+    { name = "lumaai", specifier = ">=1.1.0" },
+    { name = "mypy", specifier = ">=1.13.0" },
+    { name = "openai", specifier = ">=1.54.3" },
+    { name = "pillow", specifier = ">=11.0.0" },
+    { name = "pydantic", specifier = ">=2.9.2" },
+    { name = "pydantic-settings", specifier = ">=2.6.1" },
+    { name = "python-multipart", specifier = ">=0.0.17" },
+    { name = "ruff", specifier = ">=0.7.3" },
+    { name = "starlette", specifier = ">=0.41.2" },
+    { name = "uvicorn", extras = ["standard"], specifier = ">=0.32.0" },
+]
+
+[package.metadata.requires-dev]
+dev = [
+    { name = "boto3-stubs", extras = ["essential"], specifier = ">=1.35.57" },
+    { name = "types-requests", specifier = ">=2.32.0.20241016" },
 ]
 
 [[package]]
