@@ -110,7 +110,7 @@ const VacationForm: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-center">
+    <div style={{ minHeight: "80vh" }} className="flex flex-col items-center">
       <form
         onSubmit={handleSubmit(onSubmit)}
         className="max-w-lg mx-auto p-6 bg-white shadow-md rounded-md space-y-6 mt-6 mb-6"
@@ -162,7 +162,7 @@ const VacationForm: React.FC = () => {
         </button>
       </form>
       {/* works with local files as well as URL: http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4 */}
-      <VideoPlayer url="/videos/holiday_vacation_resort_resort_640.mp4" width="640px" height="360px" />
+      <VideoPlayer url="/videos/luma-generated.mp4" width="640px" height="360px" />
     </div>
   );  
 };
