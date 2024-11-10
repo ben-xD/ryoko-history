@@ -2,10 +2,14 @@
 import { env } from "../env";
 
 import createClient from "openapi-fetch";
-import type {paths} from '../codegen/client';
+import type {components, paths} from '../codegen/client';
 
+
+export type Schema = components["schemas"];
 export const client = createClient<paths>({ baseUrl: env.backendHttpUrl });
 
+
+export type CreateTravelSummaryMetadata = Schema["CreateTravelSummaryMetadata"]
 
 //Examples
 // const reply = await client.POST("/uploadfiles/", {

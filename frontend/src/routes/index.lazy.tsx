@@ -9,7 +9,7 @@ export const Route = createLazyFileRoute("/")({
 function Index() {
   return (
     <>
-    <h2 style={{color: 'white'}} className="text-2xl font-semibold text-gray-800 mt-4">Ryoko Travel Assistant</h2>
+    <h2 style={{color: 'white'}} className="mt-4 text-2xl font-semibold text-gray-800">Ryoko Travel Videos</h2>
     <MyVoiceAgentComponent />
     <VacationForm />
     </>

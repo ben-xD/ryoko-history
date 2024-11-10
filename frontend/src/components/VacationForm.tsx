@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { useForm, useFieldArray, type SubmitHandler, Controller } from 'react-hook-form';
-import * as exifr from 'exifr';
-import VideoPlayer from './VideoPlayer';
-import {client} from '@/clients/httpClient';
 import { useMutation } from '@tanstack/react-query';
+import * as exifr from 'exifr';
+import React, { useState } from 'react';
+import { useFieldArray, useForm, type SubmitHandler } from 'react-hook-form';
 import { env } from '../env';
-import { useAtom, useAtomValue } from 'jotai';
+import { useAtomValue } from 'jotai';
 import { transcriptAtom } from './VoiceAgent';
+import VideoPlayer from './VideoPlayer';
+import type {CreateTravelSummaryMetadata} from '@/clients/httpClient';
 
 interface ExifData {
   [key: string]: unknown;
@@ -86,7 +86,7 @@ const VacationForm: React.FC = () => {
       for (const file of imageFiles) {
         formData.append('images', file.file);
       }
-      formData.append('metadata_json_str', JSON.stringify({names, description, transcript_messages: transcript}));
+      formData.append('metadata_json_str', JSON.stringify({names, description, transcript_messages: transcript} satisfies CreateTravelSummaryMetadata));
 
       const apiPath = "/create-travel-summary/";
       const reply = await fetch(env.backendHttpUrl + apiPath, {

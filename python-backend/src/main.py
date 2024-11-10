@@ -1,7 +1,7 @@
 import asyncio
 import json
 from pathlib import Path
-from typing import Literal, Optional
+from typing import Literal, Optional, Tuple
 
 from src.local_paths import LOCAL_UPLOAD_DIRECTORY
 from src.openai_summary import TranscriptMessage, create_summary_from_images_and_metadata
@@ -50,6 +50,11 @@ async def generate_and_download_video_from(image_pair: ImagePair):
         print("Failed to generate video, skipping download")
         return None
     return await download_video_from_url(video_url)
+
+
+@app.get("/do-not-use")
+async def do_not_use() -> Tuple[CreateTravelSummaryMetadata]:
+    return "This endpoint is not meant to be used, but just for API generation"
 
 
 @app.post("/create-travel-summary/")
