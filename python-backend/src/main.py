@@ -83,7 +83,6 @@ async def create_travel_summary(
     local_generated_video_paths = await asyncio.gather(*tasks)
     print(local_generated_video_paths)
     
-    # TODO read exifmetadata from images
     # TODO call OpenAI API to generate summary based on images and metadata
     summary = create_summary_from_images_and_metadata(remote_file_paths, metadata.names, metadata.description, metadata.transcript_messages)
     

@@ -52,10 +52,10 @@ Created by Miki Suzuki, Jim Plimmer and Ben Butterworth
 
 ## TODOs
 
-- Try to integrate Conversational API in frontend. We can then just send the user transcript and assistant transcript (from the API response) as part of our "create video summary" API
-- Call OpenAPI to generate transcript for voice
 - Call ElevenLabs to generate voice from transcript
-- Generate translations of voice over (for use case: grandmother in Japan)
 - Create nice output (end to end). Find a great example to demo.
 - Create video recording of demo
 - Create slides (Problem, tech)
+
+- Low priority
+  - read exifmetadata from images in backend
