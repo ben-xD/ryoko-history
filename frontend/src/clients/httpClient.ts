@@ -12,6 +12,9 @@ export const client = createClient<paths>({ baseUrl: env.backendHttpUrl });
 //     body: {files: []}
 // })
 
+// Get presigned URL for elevenlabs:
+// const reply = await client.POST("/conversation/signed-url/")
+
 
 // // 
 // const mutation = useMutation({

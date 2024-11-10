@@ -5,7 +5,11 @@
   "main": "index.js",
   "scripts": {
     "start": "uv run fastapi run src/main.py",
-    "dev": "uv run uvicorn src.main:app --reload"
+    "dev": "uv run uvicorn src.main:app --reload",
+    "lint": "uv run ruff check && uv run mypy .",
+    "lint:fix": "uv run ruff check --fix && uv run mypy .",
+    "run:luma-generate": "PYTHONPATH=. uv run python src/luma_request.py",
+    "run:luma-download": "PYTHONPATH=. uv run python src/luma_video.py"
   },
   "keywords": [],
   "author": "",

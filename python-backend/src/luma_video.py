@@ -1,6 +1,8 @@
 # generate a video from two images using luma api
 import datetime
-from lumaai import AsyncLumaAI
+from pathlib import Path
+from typing import Union
+from lumaai import NOT_GIVEN, AsyncLumaAI, NotGiven
 from lumaai.types.generation_create_params import Keyframes
 from dotenv import load_dotenv
 import os
@@ -15,50 +17,84 @@ auth_token=os.environ.get("LUMAAI_API_KEY")
 luma_client = AsyncLumaAI(auth_token=auth_token)
 
 # need a list of two image urls per video
-url_list = ["https://i2.wp.com/calvinthecanine.com/wp-content/uploads/2019/11/A35A7884v4.jpg?resize=697%2C465",
+example_urls = ("https://i2.wp.com/calvinthecanine.com/wp-content/uploads/2019/11/A35A7884v4.jpg?resize=697%2C465",
     "https://static.independent.co.uk/s3fs-public/thumbnails/image/2017/06/01/16/mickey-minnie.jpg?width=1200"
-]
+)
 
-async def generate_video_from_1_or_2_images(client: AsyncLumaAI, url_list: list[str]):
-    if len(url_list) > 2:
+ImagePair = Union[tuple[str, str], tuple[str]]
+
+async def generate_video_from_1_or_2_images(client: AsyncLumaAI, urls: ImagePair, prompt: str | NotGiven = NOT_GIVEN) -> str | None:
+    if len(urls) > 2:
         raise ValueError("Only 1 or 2 images are supported")
     
     keyframes: Keyframes = {
         "frame0": {
             "type": "image",
-            "url": url_list[0]
+            "url": urls[0]
         }
         }
     
-    if url_list[1]:
+    if len(urls) > 1:
         keyframes["frame1"] = {
             "type": "image",
-            "url": url_list[1]
+            "url": urls[1]
         }
     
+    check_video_generated_interval_seconds = 5
+    
+    # the await is just for the request to succeed, not for the video to be generated
     generation = await client.generations.create(
         # aspect_ratio="16:9",
         # loop=False,
-        # prompt="my travel vlog in paris 2024",
+        prompt=prompt,
         keyframes=keyframes
     )
     video_id = generation.id
+    if video_id is None:
+        print("Video generation failed")
+        return None
+    while generation.state == "queued" or generation.state == "dreaming":
+        print("Checking video generation complete (id: ", video_id, ")")
+        await asyncio.sleep(check_video_generated_interval_seconds)
+        try:
+            generation = await client.generations.get(video_id)
+        except Exception as e:
+            print(f"Failed to get generation (id={video_id})", e)
+    
+    if generation.state == "failed":
+        print(f"Video generation failed (id={video_id})")
+        return None
+    
     print("Video generated! video ID:", generation.id)
-    return video_id
+    
+    # "assets" is only 1 video url
+    if generation.assets is None:
+        print("No video asset found")
+        return
+    url = generation.assets.video
+    if url is None:
+        print("No video url found")
+        return    
+    return url
 
 
-video_downloads_folder = "video_downloads"
+# Video generations
+GENERATED_VIDEOS_DIRECTORY = Path(os.path.join(os.path.dirname(__file__), "./ai_generated_videos")).resolve()
+print(f"Generated videos will be downloaded to {GENERATED_VIDEOS_DIRECTORY}")
+os.makedirs(GENERATED_VIDEOS_DIRECTORY, exist_ok=True)
 
 async def download_video_from_url(url: str):
-    os.makedirs(video_downloads_folder, exist_ok=True)
+    os.makedirs(GENERATED_VIDEOS_DIRECTORY, exist_ok=True)
 
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as response:
             response_content = await response.read()
             # Current time formatted compactly: luma_video_20210930_123456.mp4
-            file_name = f"{video_downloads_folder}/luma_video_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.mp4"
+            file_name = f"{GENERATED_VIDEOS_DIRECTORY}/luma_video_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.mp4"
             with open(file_name, 'wb') as f:
                 f.write(response_content)
+                print(f"Video downloaded to {file_name}")
+    return file_name
 
 
 async def download_video_from_id(client: AsyncLumaAI, video_id: str):
@@ -78,8 +114,8 @@ async def download_video_from_id(client: AsyncLumaAI, video_id: str):
 
 
 async def main():
-    video_id = await generate_video_from_1_or_2_images(luma_client, url_list)
-    await download_video_from_id(luma_client, video_id)
+    video_url = await generate_video_from_1_or_2_images(luma_client, example_urls)
+    await download_video_from_url(luma_client, video_url)
 
 
 if __name__ == "__main__":

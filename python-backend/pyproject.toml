@@ -1,16 +1,30 @@
 [project]
-name = "python-backend"
-version = "0.1.0"
+dependencies = [
+  "aiohttp>=3.10.10",
+  "boto3>=1.35.57",
+  "elevenlabs>=1.12.1",
+  "fastapi[standard]>=0.115.4",
+  "httpx>=0.27.2",
+  "lumaai>=1.1.0",
+  "mypy>=1.13.0",
+  "openai>=1.54.3",
+  "pillow>=11.0.0",
+  "pydantic-settings>=2.6.1",
+  "pydantic>=2.9.2",
+  "python-multipart>=0.0.17",
+  "ruff>=0.7.3",
+  "starlette>=0.41.2",
+  "uvicorn[standard]>=0.32.0",
+]
 description = "Add your description here"
+name = "ryoko"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = [
-    "aiohttp>=3.10.10",
-    "elevenlabs>=1.12.1",
-    "fastapi[standard]>=0.115.4",
-    "lumaai>=1.1.0",
-    "pillow>=11.0.0",
-    "python-multipart>=0.0.17",
-    "starlette>=0.41.2",
-    "uvicorn[standard]>=0.32.0",
+version = "0.1.0"
+
+[tool.uv]
+dev-dependencies = [
+  "boto3-stubs[essential]>=1.35.57",
+  "mypy-boto3>=1.35.57",
+  "types-requests>=2.32.0.20241016",
 ]
