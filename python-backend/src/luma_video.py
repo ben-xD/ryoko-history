@@ -1,6 +1,5 @@
 # generate a video from two images using luma api
 import datetime
-from pathlib import Path
 from typing import Union
 from lumaai import NOT_GIVEN, AsyncLumaAI, NotGiven
 from lumaai.types.generation_create_params import Keyframes
@@ -9,6 +8,8 @@ import os
 
 import aiohttp
 import asyncio
+
+from src.local_paths import GENERATED_VIDEOS_DIRECTORY
 
 load_dotenv()
 
@@ -44,17 +45,18 @@ async def generate_video_from_1_or_2_images(client: AsyncLumaAI, urls: ImagePair
     
     # the await is just for the request to succeed, not for the video to be generated
     generation = await client.generations.create(
-        # aspect_ratio="16:9",
+        # We can still get 9:16 and 16:9
+        aspect_ratio="16:9",
         # loop=False,
         prompt=prompt,
-        keyframes=keyframes
+        keyframes=keyframes,
     )
     video_id = generation.id
     if video_id is None:
         print("Video generation failed")
         return None
     while generation.state == "queued" or generation.state == "dreaming":
-        print("Checking video generation complete (id: ", video_id, ")")
+        print("Checking video generation status (id: ", video_id, ")")
         await asyncio.sleep(check_video_generated_interval_seconds)
         try:
             generation = await client.generations.get(video_id)
@@ -70,18 +72,13 @@ async def generate_video_from_1_or_2_images(client: AsyncLumaAI, urls: ImagePair
     # "assets" is only 1 video url
     if generation.assets is None:
         print("No video asset found")
-        return
+        return None
     url = generation.assets.video
     if url is None:
         print("No video url found")
-        return    
+        return None
     return url
 
-
-# Video generations
-GENERATED_VIDEOS_DIRECTORY = Path(os.path.join(os.path.dirname(__file__), "./ai_generated_videos")).resolve()
-print(f"Generated videos will be downloaded to {GENERATED_VIDEOS_DIRECTORY}")
-os.makedirs(GENERATED_VIDEOS_DIRECTORY, exist_ok=True)
 
 async def download_video_from_url(url: str):
     os.makedirs(GENERATED_VIDEOS_DIRECTORY, exist_ok=True)

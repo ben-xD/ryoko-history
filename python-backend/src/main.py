@@ -1,16 +1,21 @@
 import asyncio
+import json
 from pathlib import Path
-from typing import Optional
+from typing import Literal, Optional
 
+from src.local_paths import LOCAL_UPLOAD_DIRECTORY
+from src.openai_summary import create_summary_from_images_and_metadata
 from src.routes import conversation, manual_test_apis
-from src.file_upload import LOCAL_UPLOAD_DIRECTORY, save_files_to_disk, upload_user_photos_to_r2_bucket
+from src.file_upload import save_files_to_disk, upload_user_photos_to_r2_bucket
 from src.luma_video import download_video_from_url, generate_video_from_1_or_2_images, luma_client
 from src.luma_video import ImagePair
 
-from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi import FastAPI, File, Form, UploadFile, HTTPException
 from pydantic import BaseModel
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import FileResponse
+
+from src.video_postprocessing import merge_videos_and_audio
 
 app = FastAPI()
 
@@ -32,24 +37,28 @@ def read_root():
     return "OK"
 
 
-class CreateTravelSummaryMetadata(BaseModel):
+class CreateTravelSummaryMetadata(BaseModel, strict=True):
     names: list[str]
     description: Optional[str] = None
+    transcript_messages: list[TranscriptMessage] = []
 
 MINIMUM_IMAGES = 2
 
 async def generate_and_download_video_from(image_pair: ImagePair):
     video_url = await generate_video_from_1_or_2_images(luma_client, image_pair)
-    return await download_video_from_url(luma_client, video_url)
+    if video_url is None:
+        print("Failed to generate video, skipping download")
+        return None
+    return await download_video_from_url(video_url)
 
 
 @app.post("/create-travel-summary/")
 async def create_travel_summary(
     images: list[UploadFile] = File(...),
-    # metadata_json_str: str = Form(...)
+    metadata_json_str: str = Form(...)
     ):
-    # metadata_dict = json.loads(metadata_json_str)
-    # metadata = CreateTravelSummaryMetadata(**metadata_dict)
+    metadata_dict = json.loads(metadata_json_str)
+    metadata = CreateTravelSummaryMetadata(**metadata_dict)
     local_file_paths = await save_files_to_disk(images)
     
     remote_file_paths: list[str] = upload_user_photos_to_r2_bucket(local_file_paths)
@@ -71,16 +80,15 @@ async def create_travel_summary(
     
     # TODO read exifmetadata from images
     # TODO call OpenAI API to generate summary based on images and metadata
-    # summary = create_summary_from_images_and_metadata(remote_file_paths, metadata.names, metadata.description)
-    # TODO use elevenlabs to generate voice over for summary, and store locally
+    summary = create_summary_from_images_and_metadata(remote_file_paths, metadata.names, metadata.description, metadata.transcript_messages)
     
-    return "INCOMPLETE. "
+    # TODO use elevenlabs to generate voice over for summary, and store locally
     # voice_over = generate_voice_over(summary)
+    # Temporary audio
+    voice_over_path = "/Users/zen/Downloads/holy-children-s-choir-loop_78bpm_A_major.wav"
 
-    # # TODO merge all videos and 1 audio file into final video
-    # final_video_path = merge_videos_and_audio(local_generated_video_paths, voice_over)
-    # # Return final video URL to browser
-    # return final_video_path
+    final_video_path = merge_videos_and_audio(local_generated_video_paths, voice_over_path)
+    return final_video_path
 
 
 @app.get("/uploads/{filename}")

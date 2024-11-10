@@ -5,16 +5,13 @@ from fastapi import UploadFile
 from pathlib import Path
 from botocore.config import Config
 
+from src.local_paths import LOCAL_UPLOAD_DIRECTORY
+
 from .env import env
 
 
 # R2 is like S3, but with Cloudflare. It's a storage service.
 endpoint_url = f"https://{env.CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com"
-
-# Local upload
-LOCAL_UPLOAD_DIRECTORY = Path(os.path.join(os.path.dirname(__file__), "./uploads")).resolve()
-print(f"Images will be saved locally to {LOCAL_UPLOAD_DIRECTORY}")
-os.makedirs(LOCAL_UPLOAD_DIRECTORY, exist_ok=True)
 
 # Sync API
 # For more code, see https://developers.cloudflare.com/r2/examples/aws/boto3/
