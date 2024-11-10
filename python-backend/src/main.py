@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Literal, Optional
 
 from src.local_paths import LOCAL_UPLOAD_DIRECTORY
-from src.openai_summary import create_summary_from_images_and_metadata
+from src.openai_summary import TranscriptMessage, create_summary_from_images_and_metadata
 from src.routes import conversation, manual_test_apis
 from src.file_upload import save_files_to_disk, upload_user_photos_to_r2_bucket
 from src.luma_video import download_video_from_url, generate_video_from_1_or_2_images, luma_client
