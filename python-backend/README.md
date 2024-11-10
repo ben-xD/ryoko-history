@@ -15,6 +15,7 @@
 - Configure VScode to use that new python environment
 - Create cloudflare account and create an R2 bucket (remember the name)
 - Install [mypy VScode extension](https://marketplace.visualstudio.com/items?itemName=matangover.mypy)
+- Set up .env file with `cp example.env .env`
 - Optional: Install `AWS boto3` vscode extension
   - Warning: don't install Pylance, because it [breaks intellisense in vscode](https://stackoverflow.com/questions/50389852/visual-studio-code-intellisense-not-working). If you did that, uninstall Pylance extension, and uninstall python extension, and install Python extension again.
 - Optional: Set up backend for audio suppport (elevenlabs): `brew install portaudio`
