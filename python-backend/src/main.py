@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Optional, Tuple
 
 from src.local_paths import LOCAL_UPLOAD_DIRECTORY
-from src.openai_summary import TranscriptMessage, create_summary_from_images_and_metadata
+from src.openai_summary import TranscriptMessage, create_summary_from_images_and_metadata, translate_summary
 from src.routes import conversation, manual_test_apis
 from src.file_upload import save_files_to_disk, upload_user_photos_to_r2_bucket
 from src.luma_video import download_video_from_url, generate_video_from_1_or_2_images, luma_client
@@ -86,9 +86,10 @@ async def create_travel_summary(
     
     # TODO call OpenAI API to generate summary based on images and metadata
     summary = create_summary_from_images_and_metadata(remote_file_paths, metadata.names, metadata.description, metadata.transcript_messages)
-    
+    translated_summary = translate_summary(summary)
+
     # TODO use elevenlabs to generate voice over for summary, and store locally
-    voice_over_path = generate_speech(summary)
+    voice_over_path = generate_speech(translated_summary)
     # Temporary test audio
     # voice_over_path = "/Users/zen/Downloads/holy-children-s-choir-loop_78bpm_A_major.wav"
 
