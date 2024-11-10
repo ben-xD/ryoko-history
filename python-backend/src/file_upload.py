@@ -3,6 +3,7 @@ import os
 import boto3
 from fastapi import UploadFile
 from pathlib import Path
+from botocore.config import Config
 
 from .env import env
 
@@ -23,7 +24,7 @@ s3 = boto3.client(service_name='s3',
   aws_access_key_id = env.CLOUDFLARE_R2_ACCESS_KEY_ID,
   aws_secret_access_key = env.CLOUDFLARE_R2_ACCESS_KEY_SECRET,
   # To avoid generating the presigned URLs with v2 by default, which is not supported by R2 (it rejects with `Unauthorized: SigV2 authorization is not supported. Please use SigV4 instead.`)
-  config=boto3.session.Config(signature_version='v4')
+  config=Config(signature_version='v4')
 )
 
 # Async API. Not a nice way of managing the lifetime of a client. Unsure how long it will last, and if it will reauthenticate, etc.

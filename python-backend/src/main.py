@@ -4,7 +4,7 @@ from typing import Optional
 
 from src.routes import manual_test_apis
 from src.file_upload import LOCAL_UPLOAD_DIRECTORY, save_files_to_disk, upload_user_photos_to_r2_bucket
-from src.luma_video import generate_video_from_1_or_2_images, download_video_from_id, luma_client
+from src.luma_video import download_video_from_url, generate_video_from_1_or_2_images, luma_client
 from src.luma_video import ImagePair
 
 from fastapi import FastAPI, File, UploadFile, HTTPException
@@ -38,8 +38,8 @@ class CreateTravelSummaryMetadata(BaseModel):
 MINIMUM_IMAGES = 2
 
 async def generate_and_download_video_from(image_pair: ImagePair):
-    video_id = await generate_video_from_1_or_2_images(luma_client, image_pair)
-    return await download_video_from_id(luma_client, video_id)
+    video_url = await generate_video_from_1_or_2_images(luma_client, image_pair)
+    return await download_video_from_url(luma_client, video_url)
 
 
 @app.post("/create-travel-summary/")
@@ -55,8 +55,12 @@ async def create_travel_summary(
     # [(1,2), (3,4), (5)]
     paired_remote_file_paths: list[ImagePair] = []
     for i in range(0, len(remote_file_paths), 2):
-        pair = (remote_file_paths[i], remote_file_paths[i + 1])
-        paired_remote_file_paths.append(pair)
+        if i + 1 >= len(remote_file_paths):
+            # If there's an odd number of images, just use the last one
+            paired_remote_file_paths.append((remote_file_paths[i],))
+        else:
+            pair = (remote_file_paths[i], remote_file_paths[i + 1])
+            paired_remote_file_paths.append(pair)
     
     tasks = [
         generate_and_download_video_from(pair) for pair in paired_remote_file_paths

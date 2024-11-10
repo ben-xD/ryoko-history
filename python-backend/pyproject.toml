@@ -15,9 +15,6 @@ dependencies = [
   "starlette>=0.41.2",
   "uvicorn[standard]>=0.32.0",
 ]
-# async boto3:
-# "aioboto3>=13.2.0",
-# "types-aioboto3[essential]>=13.2.0.post1",
 description = "Add your description here"
 name = "ryoko"
 readme = "README.md"
@@ -27,5 +24,6 @@ version = "0.1.0"
 [tool.uv]
 dev-dependencies = [
   "boto3-stubs[essential]>=1.35.57",
+  "mypy-boto3>=1.35.57",
   "types-requests>=2.32.0.20241016",
 ]

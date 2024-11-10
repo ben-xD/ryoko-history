@@ -626,6 +626,18 @@ wheels = [
 ]
 
 [[package]]
+name = "mypy-boto3"
+version = "1.35.57"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "boto3" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/85/f3/2628827688de11be9bdf3828c27443aa09edea30b3f23513a049fbab1492/mypy_boto3-1.35.57.tar.gz", hash = "sha256:b9f4377774357cf51bfca54861a7e44f0c3e8abf55cce0d429813ca02b565841", size = 21637 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b3/fe/980022761dcf3d18517064331f9f9c35a1b8f750762b1552c57a49f94d75/mypy_boto3-1.35.57-py3-none-any.whl", hash = "sha256:d8194b2a5737aa94002fb3652d4bd194cdff3b52f6b968c51e7ba8f495400945", size = 21394 },
+]
+
+[[package]]
 name = "mypy-boto3-cloudformation"
 version = "1.35.41"
 source = { registry = "https://pypi.org/simple" }
@@ -999,6 +1011,7 @@ dependencies = [
 [package.dev-dependencies]
 dev = [
     { name = "boto3-stubs", extra = ["essential"] },
+    { name = "mypy-boto3" },
     { name = "types-requests" },
 ]
 
@@ -1023,6 +1036,7 @@ requires-dist = [
 [package.metadata.requires-dev]
 dev = [
     { name = "boto3-stubs", extras = ["essential"], specifier = ">=1.35.57" },
+    { name = "mypy-boto3", specifier = ">=1.35.57" },
     { name = "types-requests", specifier = ">=2.32.0.20241016" },
 ]
 

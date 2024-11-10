@@ -1,6 +1,5 @@
 import requests
 
-from src.luma_video import generate_video_from_1_or_2_images
 from src.env import env
 
 def main():

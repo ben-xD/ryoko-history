@@ -1,5 +1,11 @@
 # Backend
 
+## Links
+- Local
+  - API: http://localhost:8000/
+  - Swagger: http://localhost:8000/docs
+  - Frontend: http://localhost:5173/
+
 ## Setup
 
 - Install pyenv (python manager) with `brew install pyenv`
