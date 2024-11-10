@@ -13,6 +13,7 @@
     "generate-client": "openapi-typescript http://localhost:8000/openapi.json --output ./src/codegen/client.ts"
   },
   "dependencies": {
+    "@11labs/react": "^0.0.2",
     "@hookform/resolvers": "^3.9.0",
     "@radix-ui/react-collapsible": "^1.1.1",
     "@radix-ui/react-dialog": "^1.1.2",

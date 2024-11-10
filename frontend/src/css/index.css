@@ -91,3 +91,96 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+/* Body styling with a darker purply-black gradient background */
+body {
+  background: linear-gradient(135deg, #1a0735, #3d1e60);
+  font-family: Arial, sans-serif;
+  min-height: 100vh;
+  color: #ffffff; /* Default text color for contrast */
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Form container styling */
+.flex.flex-col.items-center {
+  padding: 20px;
+  min-height: 100vh;
+  justify-content: center;
+}
+
+/* Form styling */
+form {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+/* On hover, make the form slightly pop */
+form:hover {
+  transform: scale(1.01);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Input fields */
+input[type="text"],
+input[type="file"],
+textarea {
+  border: 1px solid #e5e7eb; /* Soft grey border */
+  padding: 12px;
+  border-radius: 6px;
+  transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+/* Focus state for inputs */
+input[type="text"]:focus,
+input[type="file"]:focus,
+textarea:focus {
+  border-color: #2563eb; /* Blue border on focus */
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+/* Button styling */
+button {
+  background-color: #2563eb; /* Blue background */
+  color: white;
+  font-weight: 500;
+  padding: 10px 16px;
+  border-radius: 6px;
+  transition: background-color 0.3s ease-in-out, transform 0.2s;
+}
+
+/* Hover and active states for buttons */
+button:hover {
+  background-color: #1d4ed8; /* Darker blue on hover */
+}
+
+button:active {
+  transform: scale(0.98); /* Slight press effect */
+}
+
+/* Label styling */
+label {
+  color: #374151; /* Dark grey */
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+/* Title styling */
+h2 {
+  color: #111827; /* Darker grey */
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+/* Video player styling */
+.VideoPlayer {
+  margin-top: 20px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Similar shadow to form */
+}

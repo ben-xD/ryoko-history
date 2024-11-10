@@ -93,10 +93,12 @@ const VacationForm: React.FC = () => {
   };
 
   return (
-    <>
-      <form onSubmit={handleSubmit(onSubmit)} className="max-w-lg mx-auto p-6 bg-white shadow-md rounded-md space-y-6">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-4">Vacation Form</h2>
-
+    <div className="flex flex-col items-center">
+      <h2 style={{color: 'white'}} className="text-2xl font-semibold text-gray-800 mt-4">Ryoko Form</h2>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="max-w-lg mx-auto p-6 bg-white shadow-md rounded-md space-y-6 mt-6 mb-6"
+      >
         <div>
           <label className="block text-gray-700 font-medium mb-1">Names:</label>
           {nameFields.map((field, index) => (
@@ -118,7 +120,7 @@ const VacationForm: React.FC = () => {
             </div>
           ))}
         </div>
-
+  
         <div>
           <label className="block text-gray-700 font-medium mb-1">Image Upload:</label>
           <input
@@ -129,7 +131,7 @@ const VacationForm: React.FC = () => {
             className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
-
+  
         <div>
           <label className="block text-gray-700 font-medium mb-1">Description:</label>
           <textarea
@@ -138,15 +140,15 @@ const VacationForm: React.FC = () => {
             className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
-
+  
         <button type="submit" className="w-full p-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none">
           Submit
         </button>
       </form>
       {/* works with local files as well as URL: http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4 */}
       <VideoPlayer url="/videos/holiday_vacation_resort_resort_640.mp4" width="640px" height="360px" />
-    </>
-  );
+    </div>
+  );  
 };
 
 export default VacationForm;

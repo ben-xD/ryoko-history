@@ -23,6 +23,9 @@ importers:
 
   frontend:
     dependencies:
+      '@11labs/react':
+        specifier: ^0.0.2
+        version: 0.0.2(react@18.3.1)
       '@hookform/resolvers':
         specifier: ^3.9.0
         version: 3.9.0(react-hook-form@7.53.1(react@18.3.1))
@@ -229,6 +232,14 @@ importers:
   packages/typescript-config: {}
 
 packages:
+
+  '@11labs/client@0.0.2':
+    resolution: {integrity: sha512-DMqwTREZcJOsnuTrJ9Rjc62bHDVe+OFtyrnrhfCf9ssjLi5NKAZL8IUSVYX7noh0EsR4lUl+2uvSiz14dxRO3w==}
+
+  '@11labs/react@0.0.2':
+    resolution: {integrity: sha512-MAzML7GvR+ydhS2cd3ZPUb5MZcwEvtM/jnRO8i9q3a5JfKr4U0DGEsNGTLQzQ8VBBht8BhmDTPjXHtMVFN7ecA==}
+    peerDependencies:
+      react: '>=16.8.0'
 
   '@alloc/quick-lru@5.2.0':
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
@@ -3469,6 +3480,13 @@ packages:
     resolution: {integrity: sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==}
 
 snapshots:
+
+  '@11labs/client@0.0.2': {}
+
+  '@11labs/react@0.0.2(react@18.3.1)':
+    dependencies:
+      '@11labs/client': 0.0.2
+      react: 18.3.1
 
   '@alloc/quick-lru@5.2.0': {}
 
