@@ -15,7 +15,7 @@ from pydantic import BaseModel
 from starlette.middleware.cors import CORSMiddleware
 from starlette.responses import FileResponse
 
-from src.text_speech import generate_speech
+from src.text_to_speech import generate_speech
 from src.video_postprocessing import merge_videos_and_audio
 
 app = FastAPI()

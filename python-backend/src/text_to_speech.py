@@ -7,13 +7,15 @@ from src.languages import Language
 from src.local_paths import GENERATED_AUDIO_DIRECTORY
 
 
+# Agent ID for each language
 agent_id_by_language: dict[Language, str] = {
   Language.ENGLISH: "Xb7hH8MSUJpSbSDYk0k2",
   # Language.JAPANESE: "3JDquces8E8bkmvbh6Bc"
   Language.JAPANESE: "hBWDuZMNs32sP5dKzMuc",
   Language.MALAY: "djUbJhnXETnX31p3rgun",
   Language.GERMAN: "Fghah4fztZORbiKfIGAs",
-  Language.FRENCH: "NyxenPOqNyllHIzSoPbJ"
+  Language.FRENCH: "NyxenPOqNyllHIzSoPbJ",
+  Language.CHINESE: "WuLq5z7nEcrhppO0ZQJw"
 }
 
 

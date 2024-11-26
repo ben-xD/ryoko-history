@@ -7,3 +7,4 @@ class Language(enum.Enum):
   MALAY = "MALAY"
   GERMAN = "GERMAN"
   FRENCH = "FRENCH"
+  CHINESE = "CHINESE"
