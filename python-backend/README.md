@@ -8,8 +8,6 @@
 
 ## Setup
 
-- Install pyenv (python manager) with `brew install pyenv`
-- Install python: `pyenv install`
 - [Install uv](https://github.com/astral-sh/uv) by running `curl -LsSf https://astral.sh/uv/install.sh | sh` on linux/macOS
 - Set up virtual env and install python dependencies: `uv sync`
 - Configure VScode to use that new python environment
